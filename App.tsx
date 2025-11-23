@@ -224,7 +224,7 @@ const App: React.FC = () => {
 
     return (
         <div 
-            className="fixed inset-0 flex bg-os-bg text-os-text overflow-hidden font-sans" 
+            className="fixed inset-0 flex bg-os-bg bg-os-canvas text-os-text overflow-hidden font-sans" 
             aria-busy={isNavPending} 
             data-nav-pending={isNavPending ? 'true' : 'false'}
         >

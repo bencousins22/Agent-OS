@@ -38,6 +38,7 @@
     width: 100%;
     min-height: 100dvh;
     min-width: 320px;
+    background: radial-gradient(circle at 20% 20%, rgba(0, 229, 153, 0.05), transparent 20%), radial-gradient(circle at 80% 10%, rgba(0, 117, 229, 0.05), transparent 22%), linear-gradient(145deg, #0a0f1a 0%, #0c1220 35%, #0b0f16 100%);
   }
 
   /* Hide scrollbar utility */
@@ -100,6 +101,10 @@
 }
 
 @layer utilities {
+  .bg-os-canvas {
+    background: radial-gradient(circle at 15% 20%, rgba(0, 229, 153, 0.12), transparent 22%), radial-gradient(circle at 80% 10%, rgba(90, 203, 255, 0.12), transparent 24%), radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.04), transparent 28%), linear-gradient(160deg, #0b101a 0%, #0c1424 40%, #0a0f18 100%);
+  }
+
   /* Marquee Animation */
   @keyframes marquee {
     0% {
