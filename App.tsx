@@ -296,7 +296,7 @@ const App: React.FC = () => {
                             ? isMobileBrowserSplit
                                 ? 'absolute bottom-0 left-0 right-0 h-[45%] z-50 border-t border-os-border shadow-2xl bg-[#14161b] flex flex-col min-w-0'
                                 : `absolute inset-0 z-50 bg-os-bg/95 backdrop-blur-xl transition-transform duration-300 ease-out flex flex-col min-w-0 ${chatOpen ? 'translate-y-0' : 'translate-y-[110%]'}`
-                            : `relative flex flex-row bg-os-bg min-w-[160px] max-w-[240px] flex-shrink-0 ${chatOpen ? 'border-r border-os-border' : 'hidden'}`}
+                            : `relative order-first flex flex-row bg-os-bg min-w-[160px] max-w-[240px] flex-shrink-0 ${chatOpen ? 'border-r border-os-border' : 'hidden'}`}
                     `}
                     style={!isMobile && chatOpen ? { width: `${chatWidth}px` } : undefined}
                 >
@@ -375,7 +375,7 @@ const App: React.FC = () => {
                 )}
 
                 {/* Main Content Area - Center */}
-                <div className={`flex-1 flex flex-col min-h-0 min-w-0 relative ${isMobileBrowserSplit ? 'h-[55%]' : 'h-full'}`}>
+                <div className={`flex-1 flex flex-col min-h-0 min-w-0 relative order-last ${isMobileBrowserSplit ? 'h-[55%]' : 'h-full'}`}>
                     <div className="w-full h-full px-2 sm:px-3 md:px-4 lg:px-5 overflow-auto">
                         <Suspense fallback={<ComponentLoader />}>
                             <Workspace
