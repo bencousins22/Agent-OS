@@ -1,0 +1,20 @@
+.App {
+  text-align: center;
+}
+
+.recipe-list {
+  list-style: none;
+  padding: 0;
+}
+
+.recipe {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 10px;
+}
+
+.ingredient-list {
+  text-align: left;
+  display: inline-block;
+}
