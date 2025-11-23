@@ -98,7 +98,7 @@ class JulesAgent {
                 
                 if (this.ai) {
                     this.chatSession = this.ai.chats.create({
-                        model: 'gemini-3-pro-preview',
+                        model: 'gemini-2.5-pro',
                         config: { 
                             systemInstruction: AUSSIE_SYSTEM_INSTRUCTION, 
                             tools: [{ functionDeclarations: TOOLS }] 

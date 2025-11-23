@@ -100,7 +100,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, onQuickA
                 </div>
                 <div className="flex items-center gap-2 bg-aussie-500/10 px-2.5 py-1 rounded-full border border-aussie-500/20 text-[10px] font-bold uppercase tracking-wider text-aussie-500">
                     <Sparkles className="w-3 h-3" />
-                    <span>Gemini 3.0 Pro</span>
+                    <span>Gemini 2.5 Pro</span>
                     {isProcessing && <span className="w-2 h-2 rounded-full bg-aussie-500 animate-pulse" />}
                 </div>
             </div>
@@ -109,7 +109,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, onQuickA
             <div 
                 ref={scrollRef}
                 onScroll={handleScroll}
-                className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar relative bg-os-bg scroll-smooth"
+                className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar relative bg-gradient-to-b from-[#0f131a] via-[#0c1117] to-[#0a0f15] scroll-smooth"
+                aria-live="polite"
             >
                 {messages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-center pb-10 animate-in fade-in zoom-in-95 duration-500">
