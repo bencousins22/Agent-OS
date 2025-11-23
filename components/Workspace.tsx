@@ -9,6 +9,7 @@ import { GitHubView } from './GitHubView';
 import { SettingsView } from './SettingsView';
 import { DeployView } from './DeployView';
 import { Marketplace } from './Marketplace';
+import { FlowScale } from './apps/FlowScale/FlowScale';
 import { MonacoEditor } from './MonacoEditor';
 import { TerminalView } from './TerminalView';
 import { FileExplorer } from './FileExplorer';
@@ -116,6 +117,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({
             {activeView === 'settings' && <SettingsView />}
             {activeView === 'deploy' && <DeployView />}
             {activeView === 'marketplace' && <Marketplace />}
+            {activeView === 'flow-scale' && <FlowScale />}
             {activeView === 'code' && renderCodeView()}
             {!isMobile && <BottomTicker />}
         </div>
