@@ -339,18 +339,18 @@ const App: React.FC = () => {
                     style={!isMobile && chatOpen ? { width: `${chatWidth}px` } : undefined}
                 >
                     <div className="flex-1 min-h-0 flex flex-col">
-                        <div className="h-14 md:h-16 border-b border-white/10 flex items-center justify-between px-4 md:px-5 lg:px-6 bg-[#161b22]/95 backdrop-blur-md shrink-0 pt-safe shadow-lg">
-                            <div className="flex items-center gap-3">
-                                <div className={`w-2.5 h-2.5 rounded-full ${isProcessing || isLive ? 'bg-aussie-500 animate-pulse shadow-glow' : 'bg-aussie-500'}`} />
-                                <span className="font-bold text-sm md:text-base text-white">Aussie Agent</span>
+                        <div className="h-14 sm:h-14 md:h-16 border-b border-white/10 flex items-center justify-between px-3 sm:px-4 md:px-5 lg:px-6 bg-[#161b22]/95 backdrop-blur-md shrink-0 pt-safe shadow-lg">
+                            <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 min-w-0 flex-1">
+                                <div className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full shrink-0 ${isProcessing || isLive ? 'bg-aussie-500 animate-pulse shadow-glow' : 'bg-aussie-500'}`} />
+                                <span className="font-bold text-sm sm:text-sm md:text-base text-white truncate">Aussie Agent</span>
                                 <Suspense fallback={null}>
                                     <AgentStatus state={workflowPhase} />
                                 </Suspense>
                             </div>
-                            <div className="flex items-center gap-1 md:gap-2">
-                                <button onClick={toggleTts} className={`p-2 md:p-2.5 rounded-lg transition-colors ${isTtsEnabled ? 'text-aussie-500 bg-aussie-500/10' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}><Headphones className="w-4 h-4 md:w-5 md:h-5" /></button>
-                                <button onClick={clearMessages} className="p-2 md:p-2.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-400/10 transition-colors"><Trash2 className="w-4 h-4 md:w-5 md:h-5" /></button>
-                                {isMobile && <button onClick={() => setChatOpen(false)} className="p-2 text-gray-400"><ChevronDown className="w-5 h-5" /></button>}
+                            <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0">
+                                <button onClick={toggleTts} className={`p-1.5 sm:p-2 md:p-2.5 rounded-lg transition-colors active:scale-95 ${isTtsEnabled ? 'text-aussie-500 bg-aussie-500/10' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}><Headphones className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5" /></button>
+                                <button onClick={clearMessages} className="p-1.5 sm:p-2 md:p-2.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-400/10 transition-colors active:scale-95"><Trash2 className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5" /></button>
+                                {isMobile && <button onClick={() => setChatOpen(false)} className="p-1.5 sm:p-2 text-gray-400 hover:text-white active:scale-95"><ChevronDown className="w-5 h-5" /></button>}
                             </div>
                         </div>
                         <div className="flex-1 min-h-0 flex flex-col">
@@ -370,10 +370,10 @@ const App: React.FC = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="border-t border-white/10 bg-[#0d1117]/95 backdrop-blur-sm shrink-0 p-3 md:p-4 pb-safe space-y-3">
+                        <div className="border-t border-white/10 bg-[#0d1117]/95 backdrop-blur-sm shrink-0 p-3 sm:p-4 md:p-4 pb-safe space-y-2.5 sm:space-y-3">
                             <div className="flex items-center justify-between text-xs md:text-sm text-gray-500 px-1">
                                 <div className="flex items-center gap-2 md:gap-3">
-                                    <span className="px-2.5 py-1.5 rounded-lg bg-aussie-500/10 text-aussie-500 border border-aussie-500/20 font-semibold text-xs">Gemini 2.5 Pro</span>
+                                    <span className="px-2.5 py-1.5 rounded-lg bg-aussie-500/10 text-aussie-500 border border-aussie-500/20 font-semibold text-[10px] sm:text-xs">Gemini 2.5 Pro</span>
                                     {isProcessing && <span className="w-2 h-2 rounded-full bg-aussie-500 animate-pulse shadow-glow" aria-label="Processing" />}
                                 </div>
                                 <div className="hidden md:flex items-center gap-2 text-[10px]">
@@ -382,19 +382,19 @@ const App: React.FC = () => {
                                 </div>
                             </div>
                             <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])} />
-                            <div className="flex items-end gap-2 md:gap-3">
-                                <button onClick={() => fileInputRef.current?.click()} className="p-3 md:p-3.5 rounded-xl bg-white/5 text-gray-400 hover:text-white border border-white/10 hover:border-aussie-500/40 transition-all hover:bg-white/10"><Plus className="w-5 h-5 md:w-6 md:h-6" /></button>
-                                <div className="flex-1 bg-[#0f131a]/80 border border-white/10 rounded-2xl flex items-end relative min-h-[56px] md:min-h-[60px] shadow-inner shadow-black/40 hover:border-white/20 transition-colors">
+                            <div className="flex items-end gap-2 sm:gap-2.5 md:gap-3">
+                                <button onClick={() => fileInputRef.current?.click()} className="p-2.5 sm:p-3 md:p-3.5 rounded-xl bg-white/5 text-gray-400 hover:text-white border border-white/10 hover:border-aussie-500/40 transition-all hover:bg-white/10 active:scale-95"><Plus className="w-5 h-5 sm:w-5 sm:h-5 md:w-6 md:h-6" /></button>
+                                <div className="flex-1 bg-[#0f131a]/80 border border-white/10 rounded-xl sm:rounded-2xl flex items-end relative min-h-[52px] sm:min-h-[56px] md:min-h-[60px] shadow-inner shadow-black/40 hover:border-white/20 transition-colors">
                                     <textarea
                                         value={input} onChange={(e) => { setInput(e.target.value); e.target.style.height='auto'; e.target.style.height=`${Math.min(e.target.scrollHeight,140)}px`; }}
                                         placeholder={isLive ? "Listening..." : "Message Aussie Agent..."}
-                                        className="w-full bg-transparent text-white text-base md:text-base px-4 md:px-5 py-3 md:py-4 max-h-36 outline-none resize-none placeholder:text-gray-600"
-                                        rows={1} style={{ height: '56px' }}
+                                        className="w-full bg-transparent text-white text-[15px] sm:text-base px-3 sm:px-4 md:px-5 py-3 sm:py-3 md:py-4 max-h-36 outline-none resize-none placeholder:text-gray-600"
+                                        rows={1} style={{ height: '52px' }}
                                         onKeyDown={(e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
                                     />
-                                    <button onClick={toggleLive} className={`absolute right-2 bottom-2 p-2 md:p-2.5 rounded-xl border transition-all ${isLive ? 'text-red-500 bg-red-500/10 border-red-500/40 animate-pulse' : 'text-gray-400 border-white/10 hover:border-aussie-500/40 hover:bg-white/5'}`}>{isLive ? <Mic className="w-5 h-5 md:w-6 md:h-6"/> : <MicOff className="w-5 h-5 md:w-6 md:h-6"/>}</button>
+                                    <button onClick={toggleLive} className={`absolute right-2 bottom-2 p-2 sm:p-2 md:p-2.5 rounded-xl border transition-all active:scale-95 ${isLive ? 'text-red-500 bg-red-500/10 border-red-500/40 animate-pulse' : 'text-gray-400 border-white/10 hover:border-aussie-500/40 hover:bg-white/5'}`}>{isLive ? <Mic className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"/> : <MicOff className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"/>}</button>
                                 </div>
-                                <button onClick={() => handleSendMessage()} disabled={!input.trim() && !isLive} className={`p-3 md:p-3.5 rounded-xl shrink-0 border transition-all ${input.trim() ? 'bg-aussie-500 text-black border-transparent shadow-glow hover:bg-aussie-600 active:scale-95' : 'bg-white/5 text-gray-500 border-white/10'}`}><ArrowUp className="w-5 h-5 md:w-6 md:h-6 stroke-[3]" /></button>
+                                <button onClick={() => handleSendMessage()} disabled={!input.trim() && !isLive} className={`p-2.5 sm:p-3 md:p-3.5 rounded-xl shrink-0 border transition-all active:scale-95 ${input.trim() ? 'bg-aussie-500 text-black border-transparent shadow-glow hover:bg-aussie-600' : 'bg-white/5 text-gray-500 border-white/10'}`}><ArrowUp className="w-5 h-5 sm:w-5 sm:h-5 md:w-6 md:h-6 stroke-[3]" /></button>
                             </div>
                         </div>
                     </div>

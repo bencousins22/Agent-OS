@@ -403,56 +403,56 @@ export const Dashboard: React.FC<Props> = memo(({ onNavigate, activeView }) => {
             onTouchEnd={handleEnd}
         >
             {/* Command Center Overlay - Enterprise */}
-            <div className="absolute inset-x-0 top-6 md:top-8 lg:top-10 pb-24 z-20 pointer-events-none">
-                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 space-y-6 pointer-events-auto">
+            <div className="absolute inset-x-0 top-3 sm:top-4 md:top-6 lg:top-8 xl:top-10 pb-20 sm:pb-24 z-20 pointer-events-none">
+                <div className="max-w-screen-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-10 xl:px-12 space-y-4 sm:space-y-5 md:space-y-6 pointer-events-auto">
                     {/* Hero */}
-                    <div className="w-full rounded-2xl md:rounded-3xl xl:rounded-[2rem] border border-white/10 bg-[#0e111a]/90 backdrop-blur-2xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 shadow-2xl shadow-black/50 flex flex-col md:flex-row md:items-center md:justify-between gap-6 md:gap-8">
-                        <div className="space-y-2 sm:space-y-3">
-                            <div className="text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-aussie-500">Aussie OS Command Center</div>
-                            <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight">All components, one launchpad.</div>
-                            <div className="text-sm sm:text-base md:text-lg text-gray-400 max-w-2xl leading-relaxed">Jump into any workspace: code, browser, flow, scheduler, deploy, marketplace, GitHub, and chat/agent.</div>
+                    <div className="w-full rounded-xl sm:rounded-2xl md:rounded-3xl xl:rounded-[2rem] border border-white/10 bg-[#0e111a]/90 backdrop-blur-2xl p-4 sm:p-5 md:p-6 lg:p-8 xl:p-10 shadow-2xl shadow-black/50 flex flex-col md:flex-row md:items-center md:justify-between gap-4 sm:gap-5 md:gap-6 lg:gap-8">
+                        <div className="space-y-1.5 sm:space-y-2 md:space-y-3">
+                            <div className="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] md:tracking-[0.25em] text-aussie-500">Aussie OS Command Center</div>
+                            <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-white leading-tight">All components, one launchpad.</div>
+                            <div className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-400 max-w-2xl leading-relaxed">Jump into any workspace: code, browser, flow, scheduler, deploy, marketplace, GitHub, and chat/agent.</div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3 w-full md:w-auto md:min-w-[380px] lg:min-w-[400px]">
-                            <button onClick={() => onNavigate('code')} className="px-5 sm:px-6 py-3 sm:py-3.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-aussie-500 to-aussie-600 text-black font-bold text-sm sm:text-base shadow-xl shadow-aussie-500/30 hover:shadow-2xl hover:shadow-aussie-500/40 active:scale-95 transition-all">Open Code</button>
-                            <button onClick={() => onNavigate('browser')} className="px-5 sm:px-6 py-3 sm:py-3.5 rounded-lg sm:rounded-xl bg-white/10 border border-white/10 text-white text-sm sm:text-base font-semibold hover:border-aussie-500/40 hover:bg-aussie-500/10 transition-all">Open Browser</button>
-                            <button onClick={() => onNavigate('marketplace')} className="px-5 sm:px-6 py-3 sm:py-3.5 rounded-lg sm:rounded-xl bg-white/10 border border-white/10 text-white text-sm sm:text-base font-semibold hover:border-aussie-500/40 hover:bg-aussie-500/10 transition-all">App Store</button>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-2.5 md:gap-3 w-full md:w-auto md:min-w-[340px] lg:min-w-[380px] xl:min-w-[400px]">
+                            <button onClick={() => onNavigate('code')} className="px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 md:py-3.5 rounded-lg sm:rounded-xl bg-gradient-to-br from-aussie-500 to-aussie-600 text-black font-bold text-xs sm:text-sm md:text-base shadow-xl shadow-aussie-500/30 hover:shadow-2xl hover:shadow-aussie-500/40 active:scale-95 transition-all">Open Code</button>
+                            <button onClick={() => onNavigate('browser')} className="px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 md:py-3.5 rounded-lg sm:rounded-xl bg-white/10 border border-white/10 text-white text-xs sm:text-sm md:text-base font-semibold hover:border-aussie-500/40 hover:bg-aussie-500/10 transition-all active:scale-95">Open Browser</button>
+                            <button onClick={() => onNavigate('marketplace')} className="px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 md:py-3.5 rounded-lg sm:rounded-xl bg-white/10 border border-white/10 text-white text-xs sm:text-sm md:text-base font-semibold hover:border-aussie-500/40 hover:bg-aussie-500/10 transition-all active:scale-95">App Store</button>
                         </div>
                     </div>
 
                     {/* App Grid */}
-                    <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
+                    <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5">
                         {[...NAV_ITEMS].map(item => (
                             <button
                                 key={item.view}
                                 onClick={() => onNavigate(item.view as MainView)}
-                                className={`group w-full text-left rounded-xl sm:rounded-2xl border bg-[#1a1f2e]/95 backdrop-blur-2xl p-4 sm:p-5 md:p-6 lg:p-7 flex flex-col items-start gap-3 sm:gap-4 hover:border-aussie-500/50 hover:bg-[#1e2433] transition-all shadow-lg sm:shadow-xl shadow-black/40 hover:shadow-2xl hover:shadow-aussie-500/10 hover:-translate-y-1 sm:hover:-translate-y-2 active:scale-[0.98] ${activeView === item.view ? 'ring-2 ring-aussie-500/60 border-aussie-500/40 bg-[#1e2433]' : 'border-white/15'}`}
+                                className={`group w-full text-left rounded-lg sm:rounded-xl md:rounded-2xl border bg-[#1a1f2e]/95 backdrop-blur-2xl p-3 sm:p-4 md:p-5 lg:p-6 xl:p-7 flex flex-col items-start gap-2.5 sm:gap-3 md:gap-4 hover:border-aussie-500/50 hover:bg-[#1e2433] transition-all shadow-md sm:shadow-lg md:shadow-xl shadow-black/40 hover:shadow-2xl hover:shadow-aussie-500/10 hover:-translate-y-0.5 sm:hover:-translate-y-1 md:hover:-translate-y-2 active:scale-[0.98] ${activeView === item.view ? 'ring-2 ring-aussie-500/60 border-aussie-500/40 bg-[#1e2433]' : 'border-white/15'}`}
                             >
-                                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-18 lg:h-18 rounded-xl sm:rounded-2xl bg-gradient-to-br from-aussie-500/20 to-aussie-600/10 border border-aussie-500/30 flex items-center justify-center text-aussie-400 group-hover:border-aussie-500/50 group-hover:from-aussie-500/30 group-hover:to-aussie-600/20 group-hover:shadow-lg group-hover:shadow-aussie-500/20 transition-all">
-                                    <item.icon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 stroke-[2]" />
+                                <div className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 xl:w-18 xl:h-18 rounded-lg sm:rounded-xl md:rounded-2xl bg-gradient-to-br from-aussie-500/20 to-aussie-600/10 border border-aussie-500/30 flex items-center justify-center text-aussie-400 group-hover:border-aussie-500/50 group-hover:from-aussie-500/30 group-hover:to-aussie-600/20 group-hover:shadow-lg group-hover:shadow-aussie-500/20 transition-all">
+                                    <item.icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 xl:w-9 xl:h-9 stroke-[2]" />
                                 </div>
                                 <div className="flex-1 min-w-0 w-full">
-                                    <div className="text-sm sm:text-base md:text-lg font-bold text-white truncate mb-1">{item.tooltip}</div>
-                                    <div className="text-[10px] sm:text-xs text-gray-400 font-semibold uppercase tracking-wider">Launch App</div>
+                                    <div className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-white truncate mb-0.5 sm:mb-1">{item.tooltip}</div>
+                                    <div className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 font-semibold uppercase tracking-wider">Launch App</div>
                                 </div>
                             </button>
                         ))}
                     </div>
                     
                     {/* Layout Controls */}
-                    <div className="flex flex-wrap items-center gap-4 pt-4">
+                    <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 md:gap-4 pt-2 sm:pt-3 md:pt-4">
                         <button
                             onClick={() => setLayoutLocked(v => !v)}
-                            className={`px-5 py-3 rounded-xl text-sm font-bold border transition-all active:scale-95 ${layoutLocked ? 'bg-white/10 border-white/20 text-gray-200 hover:bg-white/15' : 'bg-gradient-to-br from-aussie-500 to-aussie-600 text-black border-transparent shadow-xl shadow-aussie-500/30'}`}
+                            className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold border transition-all active:scale-95 ${layoutLocked ? 'bg-white/10 border-white/20 text-gray-200 hover:bg-white/15' : 'bg-gradient-to-br from-aussie-500 to-aussie-600 text-black border-transparent shadow-xl shadow-aussie-500/30'}`}
                         >
                             {layoutLocked ? 'Unlock Layout' : 'Lock Layout'}
                         </button>
                         <button
                             onClick={resetLayout}
-                            className="px-5 py-3 rounded-xl text-sm font-bold bg-white/5 border border-white/10 text-gray-200 hover:border-aussie-500/40 hover:bg-aussie-500/10 transition-all active:scale-95"
+                            className="px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold bg-white/5 border border-white/10 text-gray-200 hover:border-aussie-500/40 hover:bg-aussie-500/10 transition-all active:scale-95"
                         >
                             Reset Icons
                         </button>
-                        <div className="text-xs md:text-sm text-gray-500 font-medium">Drag icons/widgets when unlocked. Snap-to-grid auto-adjusts on resize.</div>
+                        <div className="text-[10px] sm:text-xs md:text-sm text-gray-500 font-medium">Drag icons/widgets when unlocked. Snap-to-grid auto-adjusts on resize.</div>
                     </div>
                 </div>
             </div>

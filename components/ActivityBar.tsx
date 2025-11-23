@@ -28,7 +28,7 @@ export const ActivityBar: React.FC<ActivityBarProps> = React.memo(({ activeView,
     
     if (isMobile) {
         return (
-            <div className="fixed bottom-0 left-0 right-0 h-[70px] bg-[#0f1216]/95 backdrop-blur-xl border-t border-os-border z-[60] pb-safe flex items-center justify-around px-2 shadow-2xl">
+            <div className="fixed bottom-0 left-0 right-0 h-[70px] bg-[#0f1216]/98 backdrop-blur-xl border-t border-os-border z-[60] pb-safe flex items-center justify-around px-2 sm:px-3 shadow-2xl">
                 <MobileTab icon={Home} label="Home" active={activeView === 'dashboard'} onClick={() => onNavigate('dashboard')} />
                 <MobileTab icon={ShoppingBag} label="Store" active={activeView === 'marketplace'} onClick={() => onNavigate('marketplace')} />
                 <MobileTab icon={Code2} label="Code" active={activeView === 'code'} onClick={() => onNavigate('code')} />
@@ -71,12 +71,12 @@ export const ActivityBar: React.FC<ActivityBarProps> = React.memo(({ activeView,
 const MobileTab = ({ icon: Icon, label, active, onClick }: any) => (
     <button
         onClick={onClick}
-        className={`flex flex-col items-center justify-center w-20 gap-1.5 transition-all active:scale-95 ${active ? 'text-aussie-500' : 'text-gray-500'}`}
+        className={`flex flex-col items-center justify-center min-w-[60px] sm:min-w-[68px] gap-1 sm:gap-1.5 transition-all active:scale-95 touch-manipulation ${active ? 'text-aussie-500' : 'text-gray-500'}`}
     >
-        <div className={`p-2 rounded-2xl transition-all shadow-sm ${active ? 'bg-gradient-to-br from-aussie-500/20 to-aussie-500/5 border border-aussie-500/20' : 'bg-white/5 border border-transparent'}`}>
-            <Icon className={`w-6 h-6 ${active ? 'fill-current' : ''}`} strokeWidth={active ? 2.5 : 1.5} />
+        <div className={`p-2 sm:p-2.5 rounded-xl sm:rounded-2xl transition-all shadow-sm ${active ? 'bg-gradient-to-br from-aussie-500/20 to-aussie-500/5 border border-aussie-500/20 shadow-aussie-500/10' : 'bg-white/5 border border-transparent'}`}>
+            <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${active ? 'fill-current' : ''}`} strokeWidth={active ? 2.5 : 1.5} />
         </div>
-        <span className="text-[11px] font-semibold tracking-tight">{label}</span>
+        <span className="text-[10px] sm:text-[11px] font-semibold tracking-tight">{label}</span>
     </button>
 );
 
