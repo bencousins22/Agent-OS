@@ -58,6 +58,7 @@ export const Dashboard: React.FC<Props> = memo(({ onNavigate, activeView }) => {
     const [iconPositions, setIconPositions] = useState<Record<string, IconPosition>>({});
     const [containerSize, setContainerSize] = useState({ width: window.innerWidth, height: window.innerHeight });
     const [openWindows, setOpenWindows] = useState<OSWindow[]>([]);
+    const [layoutLocked, setLayoutLocked] = useState(false);
     
     const [dragTarget, setDragTarget] = useState<string | null>(null);
     const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -89,6 +90,13 @@ export const Dashboard: React.FC<Props> = memo(({ onNavigate, activeView }) => {
         handleResize();
 
         const unsubWindows = wm.subscribe((wins) => setOpenWindows(wins));
+        const offBus = bus.subscribe((e) => {
+            if (e.type === 'agent-create-widget') {
+                const targetX = Math.min(containerSize.width - 220, Math.max(40, (e.payload?.x ?? Math.random() * containerSize.width)));
+                const targetY = Math.min(containerSize.height - 220, Math.max(80, (e.payload?.y ?? Math.random() * containerSize.height)));
+                dashboardState.addWidget(e.payload?.widgetType || 'note', targetX, targetY);
+            }
+        });
 
         return () => {
             clearInterval(i);
@@ -96,12 +104,15 @@ export const Dashboard: React.FC<Props> = memo(({ onNavigate, activeView }) => {
             window.removeEventListener('click', closeMenu);
             window.removeEventListener('resize', handleResize);
             unsubWindows();
+            offBus();
         };
     }, []);
 
     useEffect(() => {
         if (Object.keys(iconPositions).length > 0) {
             localStorage.setItem('desktop_icon_positions', JSON.stringify(iconPositions));
+        } else {
+            localStorage.removeItem('desktop_icon_positions');
         }
     }, [iconPositions]);
 
@@ -156,6 +167,7 @@ export const Dashboard: React.FC<Props> = memo(({ onNavigate, activeView }) => {
     };
 
     const handleMouseDown = (e: React.MouseEvent | React.TouchEvent, name: string, currentX: number, currentY: number) => {
+        if (layoutLocked) return;
         e.stopPropagation();
         
         setSelectedIcon(name);
@@ -208,6 +220,11 @@ export const Dashboard: React.FC<Props> = memo(({ onNavigate, activeView }) => {
             }
             setDragTarget(null);
         }
+    };
+
+    const resetLayout = () => {
+        setIconPositions({});
+        try { localStorage.removeItem('desktop_icon_positions'); } catch {}
     };
 
     const handleDoubleClick = (icon: DesktopItem) => {
@@ -313,13 +330,29 @@ export const Dashboard: React.FC<Props> = memo(({ onNavigate, activeView }) => {
                                 <button onClick={() => onNavigate('marketplace')} className="px-4 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm hover:border-aussie-500/40 hover:bg-aussie-500/5">App Store</button>
                             </div>
                         </div>
-                    <div className="grid grid-cols-2 gap-3 w-full md:w-[320px] text-xs">
-                        <QuickStat label="Open Windows" value={openWindows.length.toString()} />
-                        <QuickStat label="Widgets" value={widgets.length.toString()} />
-                        <QuickStat label="Desktop Items" value={icons.length.toString()} />
-                        <QuickStat label="Active View" value={activeView.toUpperCase()} />
+                        <div className="grid grid-cols-2 gap-3 w-full md:w-[320px] text-xs">
+                            <QuickStat label="Open Windows" value={openWindows.length.toString()} />
+                            <QuickStat label="Widgets" value={widgets.length.toString()} />
+                            <QuickStat label="Desktop Items" value={icons.length.toString()} />
+                            <QuickStat label="Active View" value={activeView.toUpperCase()} />
+                        </div>
                     </div>
-                </div>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                        <button 
+                            onClick={() => setLayoutLocked(v => !v)} 
+                            className={`px-4 py-2 rounded-lg text-sm font-bold border transition-colors ${layoutLocked ? 'bg-white/10 border-white/20 text-gray-200' : 'bg-aussie-500 text-black border-transparent shadow-lg shadow-aussie-500/20'}`}
+                        >
+                            {layoutLocked ? 'Unlock Layout' : 'Lock Layout'}
+                        </button>
+                        <button 
+                            onClick={resetLayout} 
+                            className="px-4 py-2 rounded-lg text-sm font-bold bg-white/5 border border-white/10 text-gray-200 hover:border-aussie-500/40 hover:bg-aussie-500/5 transition-colors"
+                        >
+                            Reset Icons
+                        </button>
+                        <div className="text-[11px] text-gray-500">Drag icons/widgets when unlocked. Snap-to-grid auto-adjusts on resize.</div>
+                    </div>
 
                     {/* App Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">

@@ -88,7 +88,7 @@ export interface FlowGraph {
     edges: FlowEdge[];
 }
 
-export type SystemEventType = 'file-change' | 'shell-output' | 'browser-navigate' | 'browser-action' | 'browser-page-loaded' | 'notification' | 'task-run' | 'task-complete' | 'agent-message' | 'switch-view' | 'open-window' | 'app-installed' | 'app-created' | 'bot-update' | 'agent-state-update' | 'agent-thought' | 'tool-execution' | 'kernel-permissions-changed';
+export type SystemEventType = 'file-change' | 'shell-output' | 'browser-navigate' | 'browser-action' | 'browser-page-loaded' | 'notification' | 'task-run' | 'task-complete' | 'agent-message' | 'switch-view' | 'open-window' | 'app-installed' | 'app-created' | 'bot-update' | 'agent-state-update' | 'agent-thought' | 'tool-execution' | 'kernel-permissions-changed' | 'agent-create-widget';
 
 export interface SystemEvent {
     type: SystemEventType;
