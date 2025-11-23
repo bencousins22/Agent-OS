@@ -6,6 +6,7 @@ import { MainView } from './types';
 import { bus } from './services/eventBus';
 import { NAV_ITEMS } from './components/ActivityBar';
 import { KernelShield } from './components/KernelShield';
+import { initWebOsBridge } from './services/webOsBridge';
 
 // Code splitting: Load components lazily
 const ChatInterface = lazy(() => import('./components/ChatInterface').then(m => ({ default: m.ChatInterface })));
@@ -134,6 +135,7 @@ const App: React.FC = () => {
         const bootTime = window.innerWidth < 768 ? 2500 : 2800; 
         setTimeout(() => setBooting(false), bootTime);
         
+        initWebOsBridge();
         scheduler.start();
         const handleResize = () => {
             const mobile = window.innerWidth < 768;

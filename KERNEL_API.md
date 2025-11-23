@@ -60,6 +60,26 @@ Guards are enforced: write methods require `fs: readwrite`; shell execution requ
 - The active kernel is exposed globally as `window.__AUSSIE_KERNEL__` for compatibility with external shells (e.g., Web-OS UI).
 - Permission changes emit a `kernel-permissions-changed` event on the bus.
 
+## postMessage bridge (Web-OS iframe or external shell)
+`initWebOsBridge()` (automatically started in `App.tsx`) listens for `postMessage` events from same-origin frames with shape:
+```js
+{
+  source: 'web-os',
+  id: 'request-id',
+  action: 'fs.read' | 'fs.write' | 'fs.list' | 'fs.mkdir' | 'fs.delete' | 'fs.move' |
+          'windows.open' | 'windows.close' | 'windows.focus' | 'windows.list' |
+          'shell.exec' | 'permissions.get' | 'permissions.set',
+  payload: {...}
+}
+```
+Responses are posted back to the sender as:
+```js
+{ source: 'aussie-kernel', id, ok: true, result }
+// or
+{ source: 'aussie-kernel', id, ok: false, error }
+```
+This lets the cloned Web-OS desktop (running in an iframe) call into Aussie OS kernel services without direct imports, while still honoring sandbox permissions.
+
 ## Web-OS integration notes
 - Replace Web-OS window/process plumbing with `kernel.windows` for open/close/focus/resize.
 - Map any Web-OS file APIs to `kernel.fs`; default sandbox prevents writes unless explicitly enabled.
