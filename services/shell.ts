@@ -116,7 +116,15 @@ class ShellService {
                 case 'js':
                     return await this.runJs(params);
                 case 'help':
-                    return { stdout: 'Aussie OS v2.1 Commands:\n  ls, cd, pwd, cat, echo, mkdir, rm\n  apm install <pkg>\n  git <clone|status|init|commit|push>\n  gemini-flow <jules|hive-mind|veo3|imagen4>\n  node <file>', stderr: '', exitCode: 0 };
+                    return { stdout: `Aussie OS v2.2 Commands:
+  File System:    ls, cd, pwd, cat, echo, mkdir, rm
+  Package Mgr:    apm install <pkg>
+  Git Ops:        git <clone|status|init|add|commit|push>
+  Agent Control:  gemini-flow <jules|hive-mind|run-flow> [options]
+  Media Gen:      gemini-flow <veo3|imagen4|lyria> --prompt "..."
+  Scripting:      node <file> | js <code>
+
+Type 'gemini-flow' for detailed agent usage.`, stderr: '', exitCode: 0 };
                 default:
                     return { stdout: '', stderr: `vsh: command not found: ${cmd}`, exitCode: 127 };
             }
@@ -313,11 +321,55 @@ class ShellService {
             };
         }
 
+        if (sub === 'run-flow') {
+            const flowId = args[1];
+            if (!flowId) {
+                return { stdout: '', stderr: 'Usage: gemini-flow run-flow <flow-id>', exitCode: 1 };
+            }
+
+            try {
+                // Load flow from file system
+                const flowPath = `/workspace/flows/${flowId}.json`;
+                if (!fs.exists(flowPath)) {
+                    return { stdout: '', stderr: `Flow not found: ${flowId}`, exitCode: 1 };
+                }
+
+                const flowData = JSON.parse(fs.readFile(flowPath));
+                const { JulesOrchestrator } = await import('./jules');
+                const jules = new JulesOrchestrator(flowData.nodes || [], flowData.edges || [], flowData.name || 'Flow');
+
+                const result = await jules.run();
+                return {
+                    stdout: `Flow "${flowData.name || flowId}" executed successfully\n${result}`,
+                    stderr: '',
+                    exitCode: 0
+                };
+            } catch (e: any) {
+                return { stdout: '', stderr: `Flow execution error: ${e.message}`, exitCode: 1 };
+            }
+        }
+
         if (sub === 'init') {
              return { stdout: 'Initialized gemini-flow with protocols: A2A, MCP', stderr: '', exitCode: 0 };
         }
 
-        return { stdout: '', stderr: 'Usage: gemini-flow <jules|hive-mind|veo3|imagen4|init> ...', exitCode: 1 };
+        // Show detailed gemini-flow help
+        return { stdout: `Gemini Flow Agent System
+
+USAGE:
+  gemini-flow jules [--quantum]                 Execute Jules autonomous agent
+  gemini-flow hive-mind --objective "task"       Spawn multi-agent swarm
+  gemini-flow run-flow <flow-id>                 Execute saved flow by ID
+  gemini-flow veo3 --prompt "video desc"         Generate video with Veo 3
+  gemini-flow imagen4 --prompt "image desc"      Generate image with Imagen 4
+  gemini-flow lyria --prompt "music desc"        Generate music with Lyria
+  gemini-flow init                               Initialize agent protocols
+
+EXAMPLES:
+  gemini-flow jules --quantum
+  gemini-flow hive-mind --objective "analyze codebase"
+  gemini-flow run-flow abc123def
+  gemini-flow veo3 --prompt "cyberpunk city timelapse"`, stderr: '', exitCode: 0 };
     }
 
     private async runJs(args: string[]): Promise<ShellResult> {

@@ -438,6 +438,39 @@ export const Dashboard: React.FC<Props> = memo(({ onNavigate, activeView }) => {
                         ))}
                     </div>
                     
+                    {/* Jules Flow Templates */}
+                    <div className="w-full rounded-xl sm:rounded-2xl border border-aussie-500/20 bg-[#0e111a]/80 backdrop-blur-2xl p-4 sm:p-5 md:p-6">
+                        <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-aussie-500/20 to-aussie-600/10 border border-aussie-500/30 flex items-center justify-center text-aussie-400">
+                                <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
+                            </div>
+                            <div>
+                                <div className="text-sm sm:text-base md:text-lg font-bold text-white">Jules Flow Templates</div>
+                                <div className="text-[10px] sm:text-xs text-gray-400">Quick-start automation workflows</div>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-2.5 md:gap-3">
+                            <FlowTemplateCard
+                                title="Code Review Flow"
+                                description="Automated PR review and suggestions"
+                                icon={Code2}
+                                onClick={() => onNavigate('flow')}
+                            />
+                            <FlowTemplateCard
+                                title="Deploy Pipeline"
+                                description="Build, test, and deploy workflow"
+                                icon={Rocket}
+                                onClick={() => onNavigate('flow')}
+                            />
+                            <FlowTemplateCard
+                                title="GitHub Sync"
+                                description="Sync repo changes and create PRs"
+                                icon={Github}
+                                onClick={() => onNavigate('flow')}
+                            />
+                        </div>
+                    </div>
+
                     {/* Layout Controls */}
                     <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 md:gap-4 pt-2 sm:pt-3 md:pt-4">
                         <button
@@ -612,6 +645,23 @@ const ContextItem = ({ icon: Icon, label, onClick }: any) => (
     >
         <Icon className="w-4 h-4 text-gray-500 group-hover:text-black" />
         <span className="text-xs font-bold">{label}</span>
+    </button>
+);
+
+const FlowTemplateCard: React.FC<{ title: string; description: string; icon: any; onClick: () => void }> = ({ title, description, icon: Icon, onClick }) => (
+    <button
+        onClick={onClick}
+        className="group text-left p-3 sm:p-4 rounded-lg sm:rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-aussie-500/40 transition-all active:scale-95"
+    >
+        <div className="flex items-start gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-aussie-500/15 border border-aussie-500/30 flex items-center justify-center text-aussie-400 shrink-0">
+                <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+                <div className="text-xs sm:text-sm font-bold text-white truncate mb-0.5 group-hover:text-aussie-400 transition-colors">{title}</div>
+                <div className="text-[10px] sm:text-xs text-gray-400 leading-tight">{description}</div>
+            </div>
+        </div>
     </button>
 );
 

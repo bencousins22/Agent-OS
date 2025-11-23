@@ -6,6 +6,7 @@ import { bus } from './eventBus';
 import { fs } from './fileSystem';
 import { shell } from './shell';
 import { audioUtils } from './audio';
+import { toolRegistry } from './toolRegistry';
 import { GoogleGenAI, Modality } from '@google/genai';
 
 const uuid = () => Math.random().toString(36).substring(2, 15);
