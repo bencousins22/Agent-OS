@@ -69,7 +69,7 @@ describe('SwarmOrchestrator (Integration)', () => {
 
 
 
-    expect(result.details.id).toBeDefined();
+    expect(result.details.sessionId).toBeDefined();
 
 
 
