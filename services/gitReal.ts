@@ -115,7 +115,7 @@ class RealGitService {
                 items.push({
                     path: filepath,
                     status: type,
-                    staged: stage === 2 || (head === 0 && stage === 2) // simplified staged check
+                    staged: stage === 3 // stage === 3 means added to index (staged)
                 });
             }
             return items;
