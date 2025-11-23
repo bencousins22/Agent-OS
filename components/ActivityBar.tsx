@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Code2, Globe, Github, Calendar, Rocket, Search, Settings, Briefcase, Zap, ShoppingBag, Menu, LayoutGrid } from 'lucide-react';
+import { Home, Code2, Globe, Github, Calendar, Rocket, Search, Settings, Briefcase, Zap, ShoppingBag, Menu, LayoutGrid, Workflow } from 'lucide-react';
 import { MainView } from '../types';
 
 interface ActivityBarProps {
@@ -19,6 +19,7 @@ export const NAV_ITEMS = [
     { view: 'code', icon: Code2, tooltip: 'Code' },
     { view: 'browser', icon: Globe, tooltip: 'Browser' },
     { view: 'flow', icon: Zap, tooltip: 'Flow' },
+    { view: 'flow-scale', icon: Workflow, tooltip: 'FlowScale' },
     { view: 'github', icon: Github, tooltip: 'GitHub' },
     { view: 'scheduler', icon: Calendar, tooltip: 'Scheduler' },
     { view: 'deploy', icon: Rocket, tooltip: 'Deploy' },
