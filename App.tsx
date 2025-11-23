@@ -147,7 +147,7 @@ const App: React.FC = () => {
         return clampChatWidth(viewport * 0.28, viewport);
     });
 
-    const { messages, isProcessing, workflowPhase, terminalBlocks, editorTabs, activeTabPath, setActiveTabPath, openFile, mediaFile, setMediaFile, processUserMessage, isLive, isTtsEnabled, toggleLive, toggleTts, clearMessages, handleFileUpload } = useAgent();
+    const { messages, isProcessing, workflowPhase, terminalBlocks, editorTabs, activeTabPath, setActiveTabPath, openFile, mediaFile, setMediaFile, processUserMessage, isLive, isTtsEnabled, toggleLive, toggleTts, clearMessages, handleFileUpload, runShellCommand } = useAgent();
 
     const handleNavigate = (view: MainView) => {
         if (view === 'code' && activeTabPath === null && editorTabs.length > 0) {
@@ -190,6 +190,14 @@ const App: React.FC = () => {
         const unsub = bus.subscribe((e) => {
             if (e.type === 'switch-view') handleNavigate(e.payload.view || 'dashboard');
             if (e.type === 'browser-navigate') handleNavigate('browser');
+            if (e.type === 'open-project') {
+                handleNavigate('code');
+                setChatOpen(true);
+                if (e.payload?.path) {
+                    runShellCommand?.(`cd ${e.payload.path}`);
+                }
+                setActivePanel('terminal');
+            }
         });
         return () => { scheduler.stop(); window.removeEventListener('resize', handleResize); unsub(); };
     }, [chatOpen, showMobileMenu]);

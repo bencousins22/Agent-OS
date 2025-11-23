@@ -29,9 +29,8 @@ export const ProjectView: React.FC = () => {
         setNewName(''); setNewDesc(''); setNewStack([]);
     };
 
-    const openProject = async (path: string) => {
-        bus.emit('switch-view', { view: 'code' });
-        setTimeout(() => shell.execute(`cd ${path}`), 100);
+    const openProject = async (path: string, name: string) => {
+        bus.emit('open-project', { path, name });
     };
 
     return (
@@ -51,7 +50,7 @@ export const ProjectView: React.FC = () => {
                 <div className={`flex-1 p-4 md:p-6 overflow-y-auto pb-24 md:pb-6 ${mobileTab === 'team' ? 'hidden md:block' : 'block'}`}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                         {projects.map(project => (
-                            <div key={project.id} onClick={() => openProject(project.path)} className="group bg-os-panel border border-os-border rounded-xl p-5 hover:border-aussie-500/50 transition-all hover:shadow-xl active:scale-[0.98] cursor-pointer">
+                            <div key={project.id} onClick={() => openProject(project.path, project.name)} className="group bg-os-panel border border-os-border rounded-xl p-5 hover:border-aussie-500/50 transition-all hover:shadow-xl active:scale-[0.98] cursor-pointer">
                                 <div className="flex justify-between items-start mb-3">
                                     <div className="bg-os-bg p-2 rounded-lg border border-os-border group-hover:border-aussie-500/30"><Folder className="w-6 h-6 text-aussie-500" /></div>
                                     <ExternalLink className="w-4 h-4 text-os-textDim" />
