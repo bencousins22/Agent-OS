@@ -402,57 +402,57 @@ export const Dashboard: React.FC<Props> = memo(({ onNavigate, activeView }) => {
             onTouchMove={handleMove}
             onTouchEnd={handleEnd}
         >
-            {/* Command Center Overlay - Simplified */}
-            <div className="absolute inset-x-0 top-4 sm:top-6 pb-24 z-20 pointer-events-none">
-                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 pointer-events-auto">
+            {/* Command Center Overlay - Enterprise */}
+            <div className="absolute inset-x-0 top-6 md:top-8 lg:top-10 pb-24 z-20 pointer-events-none">
+                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 space-y-6 pointer-events-auto">
                     {/* Hero */}
-                    <div className="w-full rounded-3xl border border-white/10 bg-[#0e111a]/85 backdrop-blur-xl p-6 shadow-2xl shadow-black/40 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                        <div className="space-y-2">
-                            <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-aussie-500">Aussie OS Command Center</div>
-                            <div className="text-[clamp(1.25rem,2vw,1.75rem)] font-bold text-white leading-tight">All components, one launchpad.</div>
-                            <div className="text-sm text-gray-400 max-w-xl leading-relaxed">Jump into any workspace: code, browser, flow, scheduler, deploy, marketplace, GitHub, and chat/agent.</div>
+                    <div className="w-full rounded-3xl xl:rounded-[2rem] border border-white/10 bg-[#0e111a]/90 backdrop-blur-2xl p-8 md:p-10 lg:p-12 shadow-2xl shadow-black/50 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+                        <div className="space-y-3">
+                            <div className="text-xs md:text-sm font-bold uppercase tracking-[0.25em] text-aussie-500">Aussie OS Command Center</div>
+                            <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight">All components, one launchpad.</div>
+                            <div className="text-base md:text-lg text-gray-400 max-w-2xl leading-relaxed">Jump into any workspace: code, browser, flow, scheduler, deploy, marketplace, GitHub, and chat/agent.</div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 w-full md:w-auto">
-                            <button onClick={() => onNavigate('code')} className="px-4 py-2 rounded-lg bg-aussie-500 text-black font-bold text-sm shadow-lg shadow-aussie-500/20 hover:bg-aussie-600 active:scale-95 transition-transform">Open Code</button>
-                            <button onClick={() => onNavigate('browser')} className="px-4 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm hover:border-aussie-500/40 hover:bg-aussie-500/5">Open Browser</button>
-                            <button onClick={() => onNavigate('marketplace')} className="px-4 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm hover:border-aussie-500/40 hover:bg-aussie-500/5">App Store</button>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full md:w-auto md:min-w-[400px]">
+                            <button onClick={() => onNavigate('code')} className="px-6 py-3.5 rounded-xl bg-gradient-to-br from-aussie-500 to-aussie-600 text-black font-bold text-base shadow-xl shadow-aussie-500/30 hover:shadow-2xl hover:shadow-aussie-500/40 active:scale-95 transition-all">Open Code</button>
+                            <button onClick={() => onNavigate('browser')} className="px-6 py-3.5 rounded-xl bg-white/10 border border-white/10 text-white text-base font-semibold hover:border-aussie-500/40 hover:bg-aussie-500/10 transition-all">Open Browser</button>
+                            <button onClick={() => onNavigate('marketplace')} className="px-6 py-3.5 rounded-xl bg-white/10 border border-white/10 text-white text-base font-semibold hover:border-aussie-500/40 hover:bg-aussie-500/10 transition-all">App Store</button>
                         </div>
                     </div>
 
                     {/* App Grid */}
-                    <div className="grid grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] sm:grid-cols-[repeat(auto-fit,minmax(11rem,1fr))] lg:grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] gap-3">
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(11rem,1fr))] sm:grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] lg:grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] xl:grid-cols-[repeat(auto-fit,minmax(15rem,1fr))] gap-4 md:gap-5">
                         {[...NAV_ITEMS].map(item => (
                             <button
                                 key={item.view}
                                 onClick={() => onNavigate(item.view as MainView)}
-                                className={`group w-full text-left rounded-xl border border-white/10 bg-[#0e111a]/85 backdrop-blur-xl p-3 flex flex-col items-start gap-2 hover:border-aussie-500/40 hover:bg-aussie-500/5 transition-colors shadow-lg shadow-black/30 ${activeView === item.view ? 'ring-1 ring-aussie-500/40' : ''}`}
+                                className={`group w-full text-left rounded-2xl border border-white/10 bg-[#0e111a]/90 backdrop-blur-2xl p-5 md:p-6 flex flex-col items-start gap-3 hover:border-aussie-500/40 hover:bg-aussie-500/5 transition-all shadow-xl shadow-black/40 hover:shadow-2xl hover:-translate-y-1 active:scale-[0.98] ${activeView === item.view ? 'ring-2 ring-aussie-500/40 border-aussie-500/20' : ''}`}
                             >
-                                <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-aussie-500">
-                                    <item.icon className="w-4 h-4" />
+                                <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center text-aussie-500 group-hover:border-aussie-500/30 group-hover:from-aussie-500/20 group-hover:to-aussie-500/5 transition-all shadow-lg">
+                                    <item.icon className="w-6 h-6 md:w-7 md:h-7" />
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <div className="text-xs font-bold text-white truncate">{item.tooltip}</div>
-                                    <div className="text-[10px] text-gray-500 uppercase tracking-wider">Launch</div>
+                                <div className="flex-1 min-w-0 w-full">
+                                    <div className="text-sm md:text-base font-bold text-white truncate mb-1">{item.tooltip}</div>
+                                    <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider">Launch App</div>
                                 </div>
                             </button>
                         ))}
                     </div>
                     
                     {/* Layout Controls */}
-                    <div className="flex flex-wrap items-center gap-3 pt-2">
+                    <div className="flex flex-wrap items-center gap-4 pt-4">
                         <button
                             onClick={() => setLayoutLocked(v => !v)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${layoutLocked ? 'bg-white/10 border-white/20 text-gray-200' : 'bg-aussie-500 text-black border-transparent shadow-lg shadow-aussie-500/20'}`}
+                            className={`px-5 py-3 rounded-xl text-sm font-bold border transition-all active:scale-95 ${layoutLocked ? 'bg-white/10 border-white/20 text-gray-200 hover:bg-white/15' : 'bg-gradient-to-br from-aussie-500 to-aussie-600 text-black border-transparent shadow-xl shadow-aussie-500/30'}`}
                         >
                             {layoutLocked ? 'Unlock Layout' : 'Lock Layout'}
                         </button>
                         <button
                             onClick={resetLayout}
-                            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 border border-white/10 text-gray-200 hover:border-aussie-500/40 hover:bg-aussie-500/5 transition-colors"
+                            className="px-5 py-3 rounded-xl text-sm font-bold bg-white/5 border border-white/10 text-gray-200 hover:border-aussie-500/40 hover:bg-aussie-500/10 transition-all active:scale-95"
                         >
                             Reset Icons
                         </button>
-                        <div className="text-[10px] text-gray-500">Drag icons/widgets when unlocked. Snap-to-grid auto-adjusts on resize.</div>
+                        <div className="text-xs md:text-sm text-gray-500 font-medium">Drag icons/widgets when unlocked. Snap-to-grid auto-adjusts on resize.</div>
                     </div>
                 </div>
             </div>

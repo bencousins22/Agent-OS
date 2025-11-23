@@ -39,26 +39,28 @@ export const ActivityBar: React.FC<ActivityBarProps> = React.memo(({ activeView,
     }
 
     return (
-        <div className="w-16 flex flex-col items-center py-5 bg-os-bg/95 backdrop-blur border-r border-os-border gap-4 z-30 shrink-0 h-full justify-between">
+        <div className="w-20 xl:w-24 flex flex-col items-center py-6 xl:py-8 bg-os-bg/98 backdrop-blur-xl border-r border-os-border gap-5 z-30 shrink-0 h-full justify-between shadow-lg">
             {/* Logo */}
-            <div className="w-10 h-10 bg-aussie-500 rounded-xl flex items-center justify-center text-os-bg font-bold text-lg mb-2 shadow-lg shadow-aussie-500/20 cursor-pointer hover:scale-105 transition-transform shrink-0 relative group">
+            <div className="w-12 h-12 xl:w-14 xl:h-14 bg-gradient-to-br from-aussie-500 to-aussie-600 rounded-2xl flex items-center justify-center text-os-bg font-bold text-xl xl:text-2xl mb-3 shadow-xl shadow-aussie-500/30 cursor-pointer hover:scale-105 active:scale-95 transition-all shrink-0 relative group">
                 A
-                <div className="absolute inset-0 bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-white/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute -inset-1 bg-gradient-to-br from-aussie-500/20 to-aussie-600/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
             </div>
-            
-            <div className="flex flex-col gap-3 w-full items-center justify-start flex-1 overflow-y-auto no-scrollbar px-2">
+
+            <div className="flex flex-col gap-2.5 xl:gap-3 w-full items-center justify-start flex-1 overflow-y-auto no-scrollbar px-2 xl:px-3">
                 {NAV_ITEMS.map(({ view, icon, tooltip }) => (
-                     <ActivityButton 
+                     <ActivityButton
                         key={view}
-                        icon={icon} 
-                        active={activeView === view} 
-                        onClick={() => onNavigate(view as MainView)} 
+                        icon={icon}
+                        active={activeView === view}
+                        onClick={() => onNavigate(view as MainView)}
                         tooltip={tooltip}
                     />
                 ))}
             </div>
-            
-            <div className="flex flex-col gap-3 w-full items-center pb-2">
+
+            <div className="flex flex-col gap-2.5 xl:gap-3 w-full items-center pb-2 xl:pb-3 px-2 xl:px-3">
+                <div className="h-px w-full bg-white/5 mb-1" />
                 <ActivityButton icon={Search} active={false} onClick={onSpotlight} tooltip="Search (Cmd+K)" />
                 <ActivityButton icon={Settings} active={activeView === 'settings'} onClick={() => onNavigate('settings')} tooltip="Settings" />
             </div>
@@ -67,39 +69,39 @@ export const ActivityBar: React.FC<ActivityBarProps> = React.memo(({ activeView,
 });
 
 const MobileTab = ({ icon: Icon, label, active, onClick }: any) => (
-    <button 
-        onClick={onClick} 
-        className={`flex flex-col items-center justify-center w-16 gap-1 ${active ? 'text-aussie-500' : 'text-gray-500'}`}
+    <button
+        onClick={onClick}
+        className={`flex flex-col items-center justify-center w-20 gap-1.5 transition-all active:scale-95 ${active ? 'text-aussie-500' : 'text-gray-500'}`}
     >
-        <div className={`p-1.5 rounded-xl transition-all ${active ? 'bg-aussie-500/10' : ''}`}>
-            <Icon className={`w-6 h-6 ${active ? 'fill-current' : ''}`} strokeWidth={active ? 2 : 1.5} />
+        <div className={`p-2 rounded-2xl transition-all shadow-sm ${active ? 'bg-gradient-to-br from-aussie-500/20 to-aussie-500/5 border border-aussie-500/20' : 'bg-white/5 border border-transparent'}`}>
+            <Icon className={`w-6 h-6 ${active ? 'fill-current' : ''}`} strokeWidth={active ? 2.5 : 1.5} />
         </div>
-        <span className="text-[10px] font-medium">{label}</span>
+        <span className="text-[11px] font-semibold tracking-tight">{label}</span>
     </button>
 );
 
 const ActivityButton = ({ icon: Icon, active, onClick, tooltip }: any) => (
     <div className="w-full flex items-center justify-center relative group">
         {/* Active Indicator */}
-        {active && <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 bg-aussie-500 rounded-r-full shadow-[0_0_10px] shadow-aussie-500/50" />}
-        
-        <button 
+        {active && <div className="absolute left-0 top-1/2 -translate-y-1/2 h-10 xl:h-12 w-1.5 bg-gradient-to-b from-aussie-400 to-aussie-600 rounded-r-full shadow-glow-lg" />}
+
+        <button
             onClick={onClick}
             className={`
-                p-3 rounded-xl transition-all duration-200 relative
-                ${active 
-                    ? 'text-aussie-500 bg-aussie-500/10' 
-                    : 'text-os-textDim hover:text-white hover:bg-white/5'}
+                p-3 xl:p-4 rounded-xl xl:rounded-2xl transition-all duration-200 relative
+                ${active
+                    ? 'text-aussie-500 bg-gradient-to-br from-aussie-500/15 to-aussie-500/5 shadow-lg border border-aussie-500/20'
+                    : 'text-os-textDim hover:text-white hover:bg-white/10 border border-transparent hover:border-white/10 hover:shadow-md active:scale-95'}
             `}
         >
-            <Icon className={`w-6 h-6 ${active ? 'stroke-[2]' : 'stroke-[1.5]'}`} />
+            <Icon className={`w-6 h-6 xl:w-7 xl:h-7 ${active ? 'stroke-[2.5]' : 'stroke-[1.5]'}`} />
         </button>
 
         {/* Tooltip */}
-        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-1.5 bg-[#0f1218]/95 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 border border-os-border shadow-xl transform translate-x-2 group-hover:translate-x-0 transition-all backdrop-blur">
+        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3 py-2 bg-[#0f1218]/98 text-white text-xs font-semibold rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 border border-os-border shadow-2xl transform translate-x-2 group-hover:translate-x-0 transition-all backdrop-blur-xl">
             {tooltip}
             {/* Arrow */}
-            <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-[#1c2128] border-l border-b border-os-border transform rotate-45" />
+            <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-[#0f1218] border-l border-b border-os-border transform rotate-45" />
         </div>
     </div>
 );

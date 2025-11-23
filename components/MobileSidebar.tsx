@@ -43,35 +43,35 @@ export const MobileSidebar: React.FC<Props> = ({ isOpen, onClose, activeView, on
 
             {/* Left Drawer */}
             <div className={`
-                fixed inset-y-0 left-0 w-[85%] max-w-[300px] bg-[#0f1216]/95 backdrop-blur-2xl border-r border-os-border z-[80] 
+                fixed inset-y-0 left-0 w-[88%] max-w-[340px] bg-[#0f1216]/98 backdrop-blur-2xl border-r border-os-border z-[80]
                 transform transition-transform duration-300 ease-out flex flex-col shadow-2xl
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
             `}>
                 {/* User Header */}
-                <div className="relative px-6 pt-safe pb-6 border-b border-os-border bg-gradient-to-b from-[#161b22] to-[#0f1216] shrink-0 flex items-start justify-between">
-                    <div className="flex items-center gap-4 mt-2">
+                <div className="relative px-6 pt-safe pb-7 border-b border-os-border bg-gradient-to-b from-[#161b22] to-[#0f1216] shrink-0 flex items-start justify-between shadow-lg">
+                    <div className="flex items-center gap-4 mt-3">
                         <div className="relative">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-aussie-500 to-emerald-600 flex items-center justify-center text-black font-bold text-lg shadow-lg shadow-aussie-500/20 ring-2 ring-white/5">
-                                <User className="w-6 h-6" />
+                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-aussie-500 to-emerald-600 flex items-center justify-center text-black font-bold text-xl shadow-xl shadow-aussie-500/30 ring-2 ring-white/10">
+                                <User className="w-7 h-7" />
                             </div>
-                            <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-[#0f1216] rounded-full flex items-center justify-center">
-                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#0f1216] rounded-full flex items-center justify-center ring-2 ring-[#0f1216]">
+                                <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-glow" />
                             </div>
                         </div>
                         <div>
-                            <h2 className="font-bold text-white text-base leading-tight">Admin User</h2>
-                            <div className="flex items-center gap-1.5 mt-0.5">
-                                <Shield className="w-3 h-3 text-aussie-500" />
-                                <span className="text-[10px] text-aussie-500 font-medium tracking-wide uppercase">System Admin</span>
+                            <h2 className="font-bold text-white text-lg leading-tight">Admin User</h2>
+                            <div className="flex items-center gap-2 mt-1">
+                                <Shield className="w-3.5 h-3.5 text-aussie-500" />
+                                <span className="text-[11px] text-aussie-500 font-bold tracking-wider uppercase">System Admin</span>
                             </div>
                         </div>
                     </div>
-                    
-                    <button 
-                        onClick={onClose} 
-                        className="p-2 -mr-2 text-gray-400 hover:text-white active:scale-95 transition-transform"
+
+                    <button
+                        onClick={onClose}
+                        className="p-2.5 -mr-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl active:scale-95 transition-all"
                     >
-                        <X className="w-5 h-5" />
+                        <X className="w-6 h-6" />
                     </button>
                 </div>
 
@@ -94,17 +94,17 @@ export const MobileSidebar: React.FC<Props> = ({ isOpen, onClose, activeView, on
                                             key={view}
                                             onClick={() => { onNavigate(viewKey); onClose(); }}
                                             className={`
-                                                w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 active:scale-[0.98]
-                                                ${isActive 
-                                                    ? 'bg-aussie-500/10 text-aussie-500 border border-aussie-500/20 shadow-sm' 
-                                                    : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'}
+                                                w-full flex items-center gap-3.5 px-4 py-4 rounded-xl transition-all duration-200 active:scale-[0.98]
+                                                ${isActive
+                                                    ? 'bg-gradient-to-br from-aussie-500/15 to-aussie-500/5 text-aussie-500 border border-aussie-500/20 shadow-md'
+                                                    : 'text-gray-400 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/5'}
                                             `}
                                         >
-                                            <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-[1.5]'}`} />
-                                            <span className={`text-sm ${isActive ? 'font-bold' : 'font-medium'}`}>
+                                            <Icon className={`w-6 h-6 ${isActive ? 'stroke-[2.5]' : 'stroke-[1.5]'}`} />
+                                            <span className={`text-base ${isActive ? 'font-bold' : 'font-semibold'}`}>
                                                 {getLabel(viewKey)}
                                             </span>
-                                            {isActive && <ChevronRight className="w-4 h-4 ml-auto opacity-50" />}
+                                            {isActive && <ChevronRight className="w-5 h-5 ml-auto opacity-60" />}
                                         </button>
                                     );
                                 })}

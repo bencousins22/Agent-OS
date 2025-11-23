@@ -107,31 +107,34 @@ export const Resizable: React.FC<Props> = ({
     }, [direction, mode, reversed, minSize, maxSize]);
 
     return (
-        <div 
+        <div
             ref={handleRef}
             role="separator"
             aria-orientation={direction === 'horizontal' ? 'vertical' : 'horizontal'}
             className={`
-                ${direction === 'horizontal' 
-                    ? 'w-2 h-full cursor-col-resize flex-shrink-0' 
-                    : 'h-2 w-full cursor-row-resize flex-shrink-0'}
-                transition-colors relative group
+                ${direction === 'horizontal'
+                    ? 'w-3 h-full cursor-col-resize flex-shrink-0'
+                    : 'h-3 w-full cursor-row-resize flex-shrink-0'}
+                transition-all duration-200 relative group z-10
             `}
         >
-            <div 
+            <div
                 className={`
-                    absolute inset-0 ${direction === 'horizontal' ? 'px-[6px]' : 'py-[6px]'}
+                    absolute inset-0 ${direction === 'horizontal' ? 'px-[8px]' : 'py-[8px]'}
                     flex items-center justify-center
                 `}
             >
-                <div 
+                <div
                     className={`
-                        ${direction === 'horizontal' ? 'w-[3px] h-full' : 'h-[3px] w-full'}
-                        rounded-full bg-white/10 group-hover:bg-aussie-500/60 transition-colors
-                        ${isDragging ? 'bg-aussie-500 shadow-[0_0_12px_rgba(0,229,153,0.7)]' : ''}
+                        ${direction === 'horizontal' ? 'w-1 h-12' : 'h-1 w-12'}
+                        rounded-full bg-white/5 group-hover:bg-aussie-500/70 transition-all duration-200 shadow-sm
+                        ${isDragging ? 'bg-aussie-500 shadow-[0_0_20px_rgba(0,229,153,0.8)] scale-110' : ''}
                     `}
                 />
             </div>
+            {isDragging && (
+                <div className="absolute inset-0 bg-aussie-500/10 backdrop-blur-sm animate-pulse" />
+            )}
         </div>
     );
 };

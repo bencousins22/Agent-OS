@@ -288,7 +288,7 @@ const App: React.FC = () => {
                 </div>
             )}
 
-            <div className={`flex flex-1 min-w-0 relative overflow-hidden justify-start ${isMobile ? 'pb-[70px]' : ''}`}>
+            <div className={`flex flex-1 min-w-0 relative overflow-hidden justify-start items-stretch ${isMobile ? 'pb-[70px]' : ''}`}>
                 {/* Chat Panel - Left rail on desktop, overlay on mobile */}
                 <div
                     className={`
@@ -362,13 +362,13 @@ const App: React.FC = () => {
                     </div>
                 </div>
 
-                {!isMobile && (
+                {!isMobile && chatOpen && (
                     <Suspense fallback={null}>
                         <Resizable
                             direction="horizontal"
                             mode="next"
-                            minSize={120}
-                            maxSize={320}
+                            minSize={320}
+                            maxSize={480}
                             onResize={(w) => setChatWidth(clampChatWidth(w, window.innerWidth))}
                         />
                     </Suspense>
@@ -376,7 +376,7 @@ const App: React.FC = () => {
 
                 {/* Main Content Area - Center */}
                 <div className={`flex-1 flex flex-col min-h-0 min-w-0 relative order-last ${isMobileBrowserSplit ? 'h-[55%]' : 'h-full'}`}>
-                    <div className="w-full h-full max-w-[700px] px-2 sm:px-3 md:px-4 lg:px-5 overflow-auto" style={{ maxWidth: 'clamp(540px, 60vw, 720px)' }}>
+                    <div className="w-full h-full px-3 sm:px-4 md:px-6 lg:px-8 xl:px-10 overflow-auto">
                         <Suspense fallback={<ComponentLoader />}>
                             <Workspace
                                 activeView={activeView}

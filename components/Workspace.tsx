@@ -45,16 +45,16 @@ export const Workspace: React.FC<WorkspaceProps> = ({
         if (isMobile) {
             return (
                 <div className="flex-1 flex flex-col min-h-0 relative bg-os-bg">
-                     <div className="h-12 bg-os-panel border-b border-os-border flex items-center shrink-0 px-2 gap-2">
-                        <div className="flex-1 flex overflow-x-auto scrollbar-hide gap-1">
+                     <div className="h-14 bg-os-panel border-b border-os-border flex items-center shrink-0 px-3 gap-3 shadow-sm">
+                        <div className="flex-1 flex overflow-x-auto scrollbar-hide gap-2">
                             {editorTabs.map(tab => (
-                                <button key={tab.path} onClick={() => setActiveTabPath(tab.path)} className={`px-3 py-1.5 rounded-md text-xs whitespace-nowrap ${activeTabPath === tab.path ? 'bg-aussie-500/10 text-aussie-500 border border-aussie-500/30' : 'text-os-textDim'}`}>{tab.title}</button>
+                                <button key={tab.path} onClick={() => setActiveTabPath(tab.path)} className={`px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all ${activeTabPath === tab.path ? 'bg-gradient-to-br from-aussie-500/15 to-aussie-500/5 text-aussie-500 border border-aussie-500/30 shadow-md' : 'text-os-textDim border border-transparent hover:bg-white/5'}`}>{tab.title}</button>
                             ))}
                         </div>
-                        <div className="flex bg-black/20 rounded-lg p-1 gap-1">
-                            <button onClick={() => setMobileCodeView('editor')} className={`p-2 rounded ${mobileCodeView === 'editor' ? 'bg-white/10 text-white' : 'text-gray-500'}`}><Code2 className="w-4 h-4"/></button>
-                            <button onClick={() => setMobileCodeView('terminal')} className={`p-2 rounded ${mobileCodeView === 'terminal' ? 'bg-white/10 text-white' : 'text-gray-500'}`}><Terminal className="w-4 h-4"/></button>
-                            <button onClick={() => setMobileCodeView('files')} className={`p-2 rounded ${mobileCodeView === 'files' ? 'bg-white/10 text-white' : 'text-gray-500'}`}><Folder className="w-4 h-4"/></button>
+                        <div className="flex bg-black/30 rounded-xl p-1 gap-1 shadow-inner">
+                            <button onClick={() => setMobileCodeView('editor')} className={`p-2.5 rounded-lg transition-all ${mobileCodeView === 'editor' ? 'bg-white/15 text-white shadow-sm' : 'text-gray-500'}`}><Code2 className="w-5 h-5"/></button>
+                            <button onClick={() => setMobileCodeView('terminal')} className={`p-2.5 rounded-lg transition-all ${mobileCodeView === 'terminal' ? 'bg-white/15 text-white shadow-sm' : 'text-gray-500'}`}><Terminal className="w-5 h-5"/></button>
+                            <button onClick={() => setMobileCodeView('files')} className={`p-2.5 rounded-lg transition-all ${mobileCodeView === 'files' ? 'bg-white/15 text-white shadow-sm' : 'text-gray-500'}`}><Folder className="w-5 h-5"/></button>
                         </div>
                      </div>
                      <div className="flex-1 relative overflow-hidden">
@@ -69,12 +69,12 @@ export const Workspace: React.FC<WorkspaceProps> = ({
         return (
             <div className="flex h-full w-full flex-row min-w-0 overflow-hidden">
                  <div className="flex-1 flex flex-col min-w-0 border-r border-os-border">
-                     <div className="h-10 flex bg-os-bg/90 backdrop-blur border-b border-os-border shrink-0 sticky top-0 z-10">
+                     <div className="h-11 md:h-12 flex bg-os-bg/95 backdrop-blur-md border-b border-os-border shrink-0 sticky top-0 z-10 shadow-sm">
                         <div className="flex overflow-x-auto scrollbar-hide flex-1">
                             {editorTabs.map(tab => (
-                                <div key={tab.path} onClick={() => setActiveTabPath(tab.path)} className={`flex items-center gap-2 px-4 min-w-[140px] max-w-[220px] cursor-pointer border-r border-os-border/60 select-none text-[11px] relative group ${activeTabPath === tab.path ? 'bg-os-panel text-white font-medium' : 'text-os-textDim hover:bg-os-panel/50'}`}>
-                                    {activeTabPath === tab.path && <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-aussie-500 to-emerald-400" />}
-                                    <FileText className="w-3.5 h-3.5 opacity-80" />
+                                <div key={tab.path} onClick={() => setActiveTabPath(tab.path)} className={`flex items-center gap-2.5 px-5 min-w-[160px] max-w-[240px] cursor-pointer border-r border-os-border/60 select-none text-xs md:text-sm relative group transition-all ${activeTabPath === tab.path ? 'bg-os-panel text-white font-semibold' : 'text-os-textDim hover:bg-os-panel/50 hover:text-white'}`}>
+                                    {activeTabPath === tab.path && <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-aussie-500 via-aussie-400 to-emerald-500 shadow-glow" />}
+                                    <FileText className="w-4 h-4 opacity-80" />
                                     <span className="truncate flex-1">{tab.title}</span>
                                 </div>
                             ))}
@@ -88,17 +88,17 @@ export const Workspace: React.FC<WorkspaceProps> = ({
                         />
                     </div>
                     <Resizable direction="vertical" mode="next" reversed={true} />
-                    <div className="h-[200px] flex flex-col bg-os-bg shrink-0 border-t border-os-border">
-                        <div className="h-9 flex items-center px-3 border-b border-os-border gap-4 bg-os-panel/90 backdrop-blur sticky top-0 z-10">
-                            <button onClick={() => setActivePanel('terminal')} className={`text-[10px] font-bold uppercase tracking-wider h-full px-2 border-b-2 ${activePanel === 'terminal' ? 'border-aussie-500 text-white' : 'border-transparent text-gray-500'}`}>Terminal</button>
-                            <button onClick={() => setActivePanel('problems')} className={`text-[10px] font-bold uppercase tracking-wider h-full px-2 border-b-2 ${activePanel === 'problems' ? 'border-aussie-500 text-white' : 'border-transparent text-gray-500'}`}>Problems</button>
+                    <div className="h-[240px] md:h-[280px] flex flex-col bg-os-bg shrink-0 border-t border-os-border shadow-lg">
+                        <div className="h-10 md:h-11 flex items-center px-4 border-b border-os-border gap-5 bg-os-panel/95 backdrop-blur-md sticky top-0 z-10">
+                            <button onClick={() => setActivePanel('terminal')} className={`text-xs md:text-sm font-bold uppercase tracking-wider h-full px-3 border-b-[3px] transition-all ${activePanel === 'terminal' ? 'border-aussie-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300 hover:border-gray-700'}`}>Terminal</button>
+                            <button onClick={() => setActivePanel('problems')} className={`text-xs md:text-sm font-bold uppercase tracking-wider h-full px-3 border-b-[3px] transition-all ${activePanel === 'problems' ? 'border-aussie-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300 hover:border-gray-700'}`}>Problems</button>
                         </div>
-                        <div className="flex-1 overflow-hidden relative">{activePanel === 'terminal' ? <TerminalView blocks={terminalBlocks} /> : <div className="flex items-center justify-center h-full text-gray-500 text-xs"><CheckCircle className="w-5 h-5 mr-2 text-aussie-500"/>No problems found.</div>}</div>
+                        <div className="flex-1 overflow-hidden relative">{activePanel === 'terminal' ? <TerminalView blocks={terminalBlocks} /> : <div className="flex items-center justify-center h-full text-gray-500 text-sm"><CheckCircle className="w-6 h-6 mr-3 text-aussie-500"/>No problems found.</div>}</div>
                     </div>
                  </div>
                  <Resizable direction="horizontal" mode="next" reversed={true} />
-                 <div className="flex flex-col bg-os-bg shrink-0 border-l border-os-border min-w-[220px]" style={{ width: 'clamp(220px, 18vw, 320px)' }}>
-                    <div className="h-9 flex bg-os-panel border-b border-os-border shrink-0 items-center px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400">Explorer</div>
+                 <div className="flex flex-col bg-os-bg shrink-0 border-l border-os-border min-w-[240px] md:min-w-[260px]" style={{ width: 'clamp(240px, 20vw, 360px)' }}>
+                    <div className="h-10 md:h-11 flex bg-os-panel/95 backdrop-blur-md border-b border-os-border shrink-0 items-center px-4 text-xs md:text-sm font-bold uppercase tracking-wider text-gray-400 shadow-sm">Explorer</div>
                     <div className="flex-1 overflow-hidden relative"><FileExplorer onFileClick={openFile} /></div>
                  </div>
             </div>

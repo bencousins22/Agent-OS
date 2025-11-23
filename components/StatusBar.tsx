@@ -37,51 +37,51 @@ export const StatusBar: React.FC<Props> = React.memo(({ activeTab, cursor }) => 
     const lastAlert = pulse.lastNotification ? pulse.lastNotification.slice(0, 40) : 'System stable';
 
     return (
-        <div className="h-7 bg-os-panel border-t border-aussie-500/30 flex items-center justify-between px-3 text-[10px] text-os-textDim select-none shrink-0 z-40">
-            <div className="flex items-center gap-3 h-full overflow-hidden">
-                <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-white/5 border border-os-border">
-                    <GitBranch className="w-3 h-3" />
-                    <span className="font-medium truncate max-w-[80px]">{branch}</span>
-                    {isDirty && <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 ml-1" />}
+        <div className="h-8 md:h-9 bg-os-panel/95 backdrop-blur-md border-t border-aussie-500/20 flex items-center justify-between px-4 md:px-5 text-[11px] md:text-xs text-os-textDim select-none shrink-0 z-40 shadow-lg">
+            <div className="flex items-center gap-3 md:gap-4 h-full overflow-hidden">
+                <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/5 border border-os-border hover:border-aussie-500/30 transition-colors shadow-sm">
+                    <GitBranch className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                    <span className="font-semibold truncate max-w-[100px]">{branch}</span>
+                    {isDirty && <span className="w-2 h-2 rounded-full bg-yellow-500 ml-1 animate-pulse shadow-glow" />}
                 </div>
 
-                <div className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded bg-white/5 border border-os-border max-w-[240px]">
-                    <FileText className="w-3 h-3" />
-                    <span className="truncate">{fileLabel}</span>
+                <div className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/5 border border-os-border hover:border-white/10 transition-colors max-w-[280px] shadow-sm">
+                    <FileText className="w-3.5 h-3.5 md:w-4 md:h-4 text-aussie-500" />
+                    <span className="truncate font-medium">{fileLabel}</span>
                 </div>
 
-                <div className="flex items-center gap-1 px-2 py-1 rounded bg-white/5 border border-os-border text-white/70">
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/5 border border-os-border text-white font-semibold shadow-sm">
                     {cursorLabel}
                 </div>
             </div>
 
-            <div className="flex items-center gap-3 h-full">
-                <div className={`flex items-center gap-1.5 px-2 py-1 rounded border ${pulse.online ? 'bg-aussie-500/10 border-aussie-500/30 text-aussie-500' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
-                    <Wifi className="w-3 h-3" />
+            <div className="flex items-center gap-3 md:gap-4 h-full">
+                <div className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border shadow-sm transition-all ${pulse.online ? 'bg-aussie-500/10 border-aussie-500/30 text-aussie-500' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
+                    <Wifi className={`w-3.5 h-3.5 md:w-4 md:h-4 ${pulse.online ? 'animate-pulse' : ''}`} />
                     <span className="font-bold">{pulse.online ? 'Online' : 'Offline'}</span>
-                    <span className="text-[9px] opacity-80">{pulse.latencyMs}ms</span>
+                    <span className="text-[10px] opacity-80">{pulse.latencyMs}ms</span>
                 </div>
 
-                <div className="hidden md:flex items-center gap-2 px-2 py-1 rounded bg-white/5 border border-os-border">
-                    <Activity className="w-3 h-3 text-aussie-500" />
+                <div className="hidden md:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/5 border border-os-border hover:border-aussie-500/20 transition-colors shadow-sm">
+                    <Activity className="w-4 h-4 text-aussie-500" />
                     <span className="font-bold text-white">{pulse.activeTasks}</span>
-                    <span className="text-[9px] text-gray-400">running</span>
-                    <span className="text-[9px] text-gray-600">/ {pulse.completedTasks} done</span>
+                    <span className="text-[10px] text-gray-400">running</span>
+                    <span className="text-[10px] text-gray-600">/ {pulse.completedTasks} done</span>
                 </div>
 
-                <div className="hidden md:flex items-center gap-2 px-2 py-1 rounded bg-white/5 border border-os-border">
-                    <LayoutGrid className="w-3 h-3 text-gray-400" />
-                    <span>{pulse.openWindows} windows</span>
-                    <span className="text-[9px] text-gray-500">{pulse.installedApps} apps</span>
+                <div className="hidden lg:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/5 border border-os-border hover:border-white/10 transition-colors shadow-sm">
+                    <LayoutGrid className="w-4 h-4 text-gray-400" />
+                    <span className="font-medium">{pulse.openWindows} windows</span>
+                    <span className="text-[10px] text-gray-500">{pulse.installedApps} apps</span>
                 </div>
 
-                <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-white/5 border border-os-border font-bold text-aussie-500">
+                <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-aussie-500/10 border border-aussie-500/30 font-bold text-aussie-500 shadow-sm">
                     {lang}
                 </div>
 
-                <div className="hidden sm:flex items-center gap-1 text-gray-400 px-2 py-1 rounded bg-white/5 border border-os-border max-w-[180px]">
-                    <Bell className="w-3 h-3" />
-                    <span className="truncate">{lastAlert}</span>
+                <div className="hidden xl:flex items-center gap-2 text-gray-400 px-2.5 py-1.5 rounded-lg bg-white/5 border border-os-border max-w-[200px] hover:border-white/10 transition-colors shadow-sm">
+                    <Bell className="w-4 h-4" />
+                    <span className="truncate font-medium">{lastAlert}</span>
                 </div>
             </div>
         </div>
