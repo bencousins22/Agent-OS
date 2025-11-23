@@ -1,13 +1,39 @@
-
+/** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  roots: ['<rootDir>'],
-  testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'],
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  modulePathIgnorePatterns: ['<rootDir>/dist'],
-  transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: './tsconfig.jest.json' }],
-  },
-  clearMocks: true,
+  projects: [
+    {
+      displayName: 'components',
+      preset: 'ts-jest/presets/default-esm',
+      testEnvironment: 'jsdom',
+      transform: {
+        '^.+\\.tsx?$': [
+          'ts-jest',
+          {
+            useESM: true,
+          },
+        ],
+      },
+      moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/src/$1',
+      },
+      extensionsToTreatAsEsm: ['.ts', '.tsx'],
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+      testMatch: ['<rootDir>/components/**/*.test.tsx'],
+    },
+    {
+      displayName: 'services',
+      preset: 'ts-jest/presets/default-esm',
+      testEnvironment: 'node',
+      transform: {
+        '^.+\\.ts?$': [
+          'ts-jest',
+          {
+            useESM: true,
+          },
+        ],
+      },
+      extensionsToTreatAsEsm: ['.ts'],
+      testMatch: ['<rootDir>/services/**/*.test.ts'],
+    },
+  ],
 };
