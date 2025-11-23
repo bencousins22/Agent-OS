@@ -37,7 +37,8 @@ export default defineConfig(({ mode }) => {
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),
-        }
+        },
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.json']
       },
       build: {
         target: 'esnext',
@@ -51,7 +52,6 @@ export default defineConfig(({ mode }) => {
         rollupOptions: {
           output: {
             manualChunks: {
-              'react-vendor': ['react', 'react-dom'],
               'editor': ['@monaco-editor/react'],
               'markdown': ['react-markdown'],
               'ai': ['@google/genai'],
