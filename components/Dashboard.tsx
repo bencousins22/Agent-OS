@@ -306,7 +306,7 @@ export const Dashboard: React.FC<Props> = memo(({ onNavigate, activeView }) => {
     return (
         <div 
             ref={containerRef}
-            className="h-full w-full relative overflow-hidden bg-os-bg select-none touch-none font-sans" 
+            className="h-full w-full relative overflow-hidden bg-os-bg select-none touch-none font-sans px-3 sm:px-4 lg:px-8"
             onClick={() => setSelectedIcon(null)}
             onContextMenu={handleContextMenu}
             onMouseMove={handleMove}
@@ -315,110 +315,57 @@ export const Dashboard: React.FC<Props> = memo(({ onNavigate, activeView }) => {
             onTouchMove={handleMove}
             onTouchEnd={handleEnd}
         >
-            {/* Command Center Overlay */}
-            <div className="absolute inset-x-4 sm:inset-x-6 top-4 sm:top-6 pb-20 z-20 pointer-events-none">
-                <div className="max-w-6xl mx-auto space-y-4 pointer-events-auto">
+            {/* Command Center Overlay - Simplified */}
+            <div className="absolute inset-x-0 top-4 sm:top-6 pb-24 z-20 pointer-events-none">
+                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 pointer-events-auto">
                     {/* Hero */}
-                    <div className="w-full rounded-3xl border border-white/10 bg-gradient-to-r from-[#0b1f1a] via-[#0f1423] to-[#0c0f18] p-6 md:p-8 shadow-2xl shadow-black/40 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                        <div className="space-y-3">
+                    <div className="w-full rounded-3xl border border-white/10 bg-[#0e111a]/85 backdrop-blur-xl p-6 shadow-2xl shadow-black/40 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                        <div className="space-y-2">
                             <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-aussie-500">Aussie OS Command Center</div>
-                            <div className="text-2xl md:text-3xl font-bold text-white leading-tight">All components, one launchpad.</div>
-                            <div className="text-sm text-gray-400 max-w-xl">Jump into any workspace: code, browser, flow, scheduler, deploy, marketplace, GitHub, and chat/agent.</div>
-                            <div className="flex flex-wrap gap-2">
-                                <button onClick={() => onNavigate('code')} className="px-4 py-2 rounded-lg bg-aussie-500 text-black font-bold text-sm shadow-lg shadow-aussie-500/20 hover:bg-aussie-600 active:scale-95 transition-transform">Open Code</button>
-                                <button onClick={() => onNavigate('browser')} className="px-4 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm hover:border-aussie-500/40 hover:bg-aussie-500/5">Open Browser</button>
-                                <button onClick={() => onNavigate('marketplace')} className="px-4 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm hover:border-aussie-500/40 hover:bg-aussie-500/5">App Store</button>
-                            </div>
+                            <div className="text-[clamp(1.25rem,2vw,1.75rem)] font-bold text-white leading-tight">All components, one launchpad.</div>
+                            <div className="text-sm text-gray-400 max-w-xl leading-relaxed">Jump into any workspace: code, browser, flow, scheduler, deploy, marketplace, GitHub, and chat/agent.</div>
                         </div>
-                        <div className="grid grid-cols-2 gap-3 w-full md:w-[320px] text-xs">
-                            <QuickStat label="Open Windows" value={openWindows.length.toString()} />
-                            <QuickStat label="Widgets" value={widgets.length.toString()} />
-                            <QuickStat label="Desktop Items" value={icons.length.toString()} />
-                            <QuickStat label="Active View" value={activeView.toUpperCase()} />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 w-full md:w-auto">
+                            <button onClick={() => onNavigate('code')} className="px-4 py-2 rounded-lg bg-aussie-500 text-black font-bold text-sm shadow-lg shadow-aussie-500/20 hover:bg-aussie-600 active:scale-95 transition-transform">Open Code</button>
+                            <button onClick={() => onNavigate('browser')} className="px-4 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm hover:border-aussie-500/40 hover:bg-aussie-500/5">Open Browser</button>
+                            <button onClick={() => onNavigate('marketplace')} className="px-4 py-2 rounded-lg bg-white/10 border border-white/10 text-white text-sm hover:border-aussie-500/40 hover:bg-aussie-500/5">App Store</button>
                         </div>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-3">
-                        <button 
-                            onClick={() => setLayoutLocked(v => !v)} 
-                            className={`px-4 py-2 rounded-lg text-sm font-bold border transition-colors ${layoutLocked ? 'bg-white/10 border-white/20 text-gray-200' : 'bg-aussie-500 text-black border-transparent shadow-lg shadow-aussie-500/20'}`}
-                        >
-                            {layoutLocked ? 'Unlock Layout' : 'Lock Layout'}
-                        </button>
-                        <button 
-                            onClick={resetLayout} 
-                            className="px-4 py-2 rounded-lg text-sm font-bold bg-white/5 border border-white/10 text-gray-200 hover:border-aussie-500/40 hover:bg-aussie-500/5 transition-colors"
-                        >
-                            Reset Icons
-                        </button>
-                        <div className="text-[11px] text-gray-500">Drag icons/widgets when unlocked. Snap-to-grid auto-adjusts on resize.</div>
                     </div>
 
                     {/* App Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] sm:grid-cols-[repeat(auto-fit,minmax(11rem,1fr))] lg:grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] gap-3">
                         {[...NAV_ITEMS].map(item => (
                             <button
                                 key={item.view}
                                 onClick={() => onNavigate(item.view as MainView)}
-                                className={`group w-full text-left rounded-2xl border border-white/10 bg-[#0e111a]/85 backdrop-blur-xl p-4 flex items-center gap-3 hover:border-aussie-500/40 hover:bg-aussie-500/5 transition-colors shadow-lg shadow-black/30 ${activeView === item.view ? 'ring-1 ring-aussie-500/40' : ''}`}
+                                className={`group w-full text-left rounded-xl border border-white/10 bg-[#0e111a]/85 backdrop-blur-xl p-3 flex flex-col items-start gap-2 hover:border-aussie-500/40 hover:bg-aussie-500/5 transition-colors shadow-lg shadow-black/30 ${activeView === item.view ? 'ring-1 ring-aussie-500/40' : ''}`}
                             >
-                                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-aussie-500">
-                                    <item.icon className="w-5 h-5" />
+                                <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-aussie-500">
+                                    <item.icon className="w-4 h-4" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="text-sm font-bold text-white truncate">{item.tooltip}</div>
-                                    <div className="text-[11px] text-gray-500 uppercase tracking-wider">Launch</div>
+                                    <div className="text-xs font-bold text-white truncate">{item.tooltip}</div>
+                                    <div className="text-[10px] text-gray-500 uppercase tracking-wider">Launch</div>
                                 </div>
-                                <div className="text-[10px] text-gray-500 group-hover:text-aussie-500">→</div>
                             </button>
                         ))}
                     </div>
-                </div>
-            </div>
-            {/* Left Sidebar: All components quick-launch */}
-            <div className="absolute inset-y-4 left-4 w-64 bg-[#0f1216]/80 backdrop-blur-xl border border-white/5 rounded-2xl shadow-2xl shadow-black/30 z-30 hidden xl:flex flex-col">
-                <div className="px-4 py-3 border-b border-white/5 flex items-center gap-2">
-                    <LayoutGrid className="w-4 h-4 text-aussie-500" />
-                    <div className="text-xs font-bold uppercase tracking-wider text-gray-400">All Components</div>
-                </div>
-                <div className="flex-1 overflow-auto custom-scrollbar p-3 space-y-2">
-                    {[...NAV_ITEMS].map(item => (
+                    
+                    {/* Layout Controls */}
+                    <div className="flex flex-wrap items-center gap-3 pt-2">
                         <button
-                            key={item.view}
-                            onClick={() => onNavigate(item.view as MainView)}
-                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm border border-transparent hover:border-aussie-500/40 hover:bg-aussie-500/5 transition-colors ${activeView === item.view ? 'bg-aussie-500/10 border-aussie-500 text-white' : 'text-gray-300'}`}
+                            onClick={() => setLayoutLocked(v => !v)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${layoutLocked ? 'bg-white/10 border-white/20 text-gray-200' : 'bg-aussie-500 text-black border-transparent shadow-lg shadow-aussie-500/20'}`}
                         >
-                            <item.icon className="w-4 h-4" />
-                            <span className="truncate">{item.tooltip}</span>
+                            {layoutLocked ? 'Unlock Layout' : 'Lock Layout'}
                         </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* Right Sidebar: System snapshot and quick actions */}
-            <div className="absolute inset-y-4 right-4 w-80 bg-[#0f1216]/80 backdrop-blur-xl border border-white/5 rounded-2xl shadow-2xl shadow-black/30 z-30 hidden 2xl:flex flex-col overflow-hidden">
-                <div className="px-4 py-3 border-b border-white/5 flex items-center gap-2">
-                    <Monitor className="w-4 h-4 text-blue-400" />
-                    <div className="text-xs font-bold uppercase tracking-wider text-gray-400">System Snapshot</div>
-                </div>
-                <div className="flex-1 overflow-auto custom-scrollbar">
-                    <SystemInfo />
-                </div>
-                <div className="border-t border-white/5 p-3 bg-[#0c0f15]">
-                    <div className="text-[11px] text-gray-500 font-bold uppercase mb-2">Quick Actions</div>
-                    <div className="grid grid-cols-2 gap-2">
-                        <button onClick={() => onNavigate('browser')} className="px-3 py-2 rounded-lg bg-white/5 text-gray-200 hover:bg-aussie-500 hover:text-black transition-colors text-sm flex items-center gap-2">
-                            <Globe className="w-4 h-4" /> Browser
+                        <button
+                            onClick={resetLayout}
+                            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 border border-white/10 text-gray-200 hover:border-aussie-500/40 hover:bg-aussie-500/5 transition-colors"
+                        >
+                            Reset Icons
                         </button>
-                        <button onClick={() => onNavigate('code')} className="px-3 py-2 rounded-lg bg-white/5 text-gray-200 hover:bg-aussie-500 hover:text-black transition-colors text-sm flex items-center gap-2">
-                            <Code2 className="w-4 h-4" /> Editor
-                        </button>
-                        <button onClick={() => onNavigate('scheduler')} className="px-3 py-2 rounded-lg bg-white/5 text-gray-200 hover:bg-aussie-500 hover:text-black transition-colors text-sm flex items-center gap-2">
-                            <Calendar className="w-4 h-4" /> Scheduler
-                        </button>
-                        <button onClick={() => onNavigate('deploy')} className="px-3 py-2 rounded-lg bg-white/5 text-gray-200 hover:bg-aussie-500 hover:text-black transition-colors text-sm flex items-center gap-2">
-                            <Rocket className="w-4 h-4" /> Deploy
-                        </button>
+                        <div className="text-[10px] text-gray-500">Drag icons/widgets when unlocked. Snap-to-grid auto-adjusts on resize.</div>
                     </div>
                 </div>
             </div>
