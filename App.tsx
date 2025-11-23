@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense, useTransition } from 'react';
 import { Mic, MicOff, Headphones, Trash2, Plus, ArrowUp, ChevronDown } from 'lucide-react';
 import { useAgent } from './services/useAgent';
 import { scheduler } from './services/scheduler';
 import { MainView } from './types';
 import { bus } from './services/eventBus';
+import { NAV_ITEMS } from './components/ActivityBar';
+import { KernelShield } from './components/KernelShield';
 
 // Code splitting: Load components lazily
 const ChatInterface = lazy(() => import('./components/ChatInterface').then(m => ({ default: m.ChatInterface })));
@@ -14,6 +16,7 @@ const Spotlight = lazy(() => import('./components/Spotlight').then(m => ({ defau
 const ActivityBar = lazy(() => import('./components/ActivityBar').then(m => ({ default: m.ActivityBar })));
 const StatusBar = lazy(() => import('./components/StatusBar').then(m => ({ default: m.StatusBar })));
 const Resizable = lazy(() => import('./components/Resizable').then(m => ({ default: m.Resizable })));
+const MobileSidebar = lazy(() => import('./components/MobileSidebar').then(m => ({ default: m.MobileSidebar })));
 const Workspace = lazy(() => import('./components/Workspace').then(m => ({ default: m.Workspace })));
 
 // Loading fallback component
@@ -99,16 +102,23 @@ const App: React.FC = () => {
     const [booting, setBooting] = useState(true);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [chatOpen, setChatOpen] = useState(false); 
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [mobileCodeView, setMobileCodeView] = useState<'editor' | 'terminal' | 'files'>('editor');
+    const [isNavPending, startNavTransition] = useTransition();
 
     const { messages, isProcessing, workflowPhase, terminalBlocks, editorTabs, activeTabPath, setActiveTabPath, openFile, mediaFile, setMediaFile, processUserMessage, isLive, isTtsEnabled, toggleLive, toggleTts, clearMessages, handleFileUpload } = useAgent();
 
     const handleNavigate = (view: MainView) => {
-        if (view === 'code' && activeTabPath === null && editorTabs.length > 0) setActiveTabPath(editorTabs[0].path);
-        setActiveView(view);
+        startNavTransition(() => {
+            if (view === 'code' && activeTabPath === null && editorTabs.length > 0) {
+                setActiveTabPath(editorTabs[0].path);
+            }
+            setActiveView(view);
+        });
         if (window.innerWidth < 768) {
             if (view === 'browser') setChatOpen(true);
+            setShowMobileMenu(false);
         }
     };
 
@@ -129,16 +139,17 @@ const App: React.FC = () => {
             const mobile = window.innerWidth < 768;
             setIsMobile(mobile);
             if (!mobile && !chatOpen) setChatOpen(true);
+            if (!mobile && showMobileMenu) setShowMobileMenu(false);
         };
         window.addEventListener('resize', handleResize);
         handleResize();
         
         const unsub = bus.subscribe((e) => {
             if (e.type === 'switch-view') handleNavigate(e.payload.view || 'dashboard');
-            if (e.type === 'browser-navigate') { setActiveView('browser'); setChatOpen(true); }
+            if (e.type === 'browser-navigate') handleNavigate('browser');
         });
         return () => { scheduler.stop(); window.removeEventListener('resize', handleResize); unsub(); };
-    }, [chatOpen]);
+    }, [chatOpen, showMobileMenu]);
 
     useEffect(() => {
         if (isMobile && messages.length > 0 && messages[messages.length - 1].role === 'model') setChatOpen(true);
@@ -149,12 +160,28 @@ const App: React.FC = () => {
     const isMobileBrowserSplit = isMobile && activeView === 'browser' && chatOpen;
 
     return (
-        <div className="fixed inset-0 flex bg-os-bg text-os-text overflow-hidden font-sans">
+        <div 
+            className="fixed inset-0 flex bg-os-bg text-os-text overflow-hidden font-sans" 
+            aria-busy={isNavPending} 
+            data-nav-pending={isNavPending ? 'true' : 'false'}
+        >
+            <div className="fixed top-3 right-3 z-[120]">
+                <KernelShield />
+            </div>
             <Suspense fallback={null}>
                 <NotificationCenter />
             </Suspense>
             <Suspense fallback={null}>
                 <Spotlight isOpen={showSpotlight} onClose={() => setShowSpotlight(false)} onNavigate={handleNavigate} />
+            </Suspense>
+            <Suspense fallback={null}>
+                <MobileSidebar
+                    isOpen={showMobileMenu}
+                    onClose={() => setShowMobileMenu(false)}
+                    activeView={activeView}
+                    onNavigate={handleNavigate}
+                    menuItems={NAV_ITEMS}
+                />
             </Suspense>
 
             {/* Activity Bar - Left Sidebar */}
@@ -168,7 +195,14 @@ const App: React.FC = () => {
             {isMobile && (
                 <div className="fixed bottom-0 left-0 right-0 h-[70px] z-[60] bg-[#0a0c10] border-t border-os-border pb-safe">
                     <Suspense fallback={<ComponentLoader />}>
-                        <ActivityBar activeView={activeView} onNavigate={handleNavigate} onSpotlight={() => setShowSpotlight(true)} isMobile={true} onChatToggle={() => setChatOpen(!chatOpen)} />
+                        <ActivityBar 
+                            activeView={activeView} 
+                            onNavigate={handleNavigate} 
+                            onSpotlight={() => setShowSpotlight(true)} 
+                            isMobile={true} 
+                            onChatToggle={() => setChatOpen(!chatOpen)} 
+                            onMenuToggle={() => setShowMobileMenu(true)} 
+                        />
                     </Suspense>
                 </div>
             )}
