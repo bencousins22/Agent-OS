@@ -87,7 +87,7 @@ export const BrowserView: React.FC<BrowserViewProps> = memo(({ onInteract }) => 
                     </button>
                 </div>
                 
-                <div className="flex-1 bg-[#0d1117] border border-os-border rounded-xl md:rounded-full h-10 md:h-8 flex items-center px-3 gap-2 text-sm transition-all focus-within:border-aussie-500/50 shadow-inner overflow-hidden group">
+                <div className="flex-1 bg-[#0d1117]/80 border border-white/5 rounded-xl md:rounded-full h-10 md:h-9 flex items-center px-3 gap-2 text-sm transition-all focus-within:border-aussie-500/50 shadow-[0_6px_30px_-18px_rgba(0,0,0,0.6)] overflow-hidden group backdrop-blur">
                     {isStartPage ? <Search className="w-4 h-4 text-gray-500 shrink-0 group-focus-within:text-aussie-500" /> : <Lock className="w-3.5 h-3.5 text-aussie-500 shrink-0" />}
                     <input 
                         className="flex-1 bg-transparent outline-none text-gray-200 w-full placeholder-gray-600 text-[16px] md:text-sm" 
@@ -120,14 +120,14 @@ export const BrowserView: React.FC<BrowserViewProps> = memo(({ onInteract }) => 
                         <p className="text-base text-gray-500 mb-8">Secure, AI-powered web browsing.</p>
                         <div className="w-full max-w-xl relative group mb-10 shrink-0 animate-in slide-in-from-bottom duration-500 delay-100">
                             <input 
-                                className="w-full bg-[#161b22] border border-gray-700 rounded-2xl py-4 px-12 text-lg text-white outline-none focus:border-aussie-500/50 focus:shadow-[0_0_20px_rgba(0,229,153,0.1)] transition-all shadow-2xl placeholder-gray-600"
+                                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 px-12 text-lg text-white outline-none focus:border-aussie-500/50 focus:shadow-[0_10px_40px_-20px_rgba(0,229,153,0.4)] transition-all shadow-xl placeholder-gray-600 backdrop-blur"
                                 placeholder="Search or type URL..."
                                 onKeyDown={handleKeyDown}
                             />
                             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-500 group-focus-within:text-aussie-500 transition-colors" />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg px-4 animate-in slide-in-from-bottom duration-500 delay-200">
-                            <Shortcut label="GitHub" icon={Code} onClick={() => onInteract?.("Go to GitHub")} />
+                            <Shortcut label="GitHub" icon={Code} onClick={() => onInteract?.("Open GitHub and list repos")} />
                             <Shortcut label="Localhost" icon={Layout} onClick={() => setUrl('http://localhost:3000/welcome.html')} />
                             <Shortcut label="Research AI" icon={Sparkles} onClick={() => onInteract?.("Research latest AI news")} />
                             <Shortcut label="Trending" icon={Globe} onClick={() => onInteract?.("What is trending today?")} />

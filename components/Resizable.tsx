@@ -109,13 +109,29 @@ export const Resizable: React.FC<Props> = ({
     return (
         <div 
             ref={handleRef}
+            role="separator"
+            aria-orientation={direction === 'horizontal' ? 'vertical' : 'horizontal'}
             className={`
                 ${direction === 'horizontal' 
-                    ? 'w-1 h-full cursor-col-resize hover:bg-aussie-500/50 z-50 flex-shrink-0' 
-                    : 'h-1 w-full cursor-row-resize hover:bg-aussie-500/50 z-50 bg-[#0d1117] border-t border-os-border flex-shrink-0'}
-                transition-colors
-                ${isDragging ? 'bg-aussie-500' : 'bg-transparent'}
+                    ? 'w-2 h-full cursor-col-resize flex-shrink-0' 
+                    : 'h-2 w-full cursor-row-resize flex-shrink-0'}
+                transition-colors relative group
             `}
-        />
+        >
+            <div 
+                className={`
+                    absolute inset-0 ${direction === 'horizontal' ? 'px-[6px]' : 'py-[6px]'}
+                    flex items-center justify-center
+                `}
+            >
+                <div 
+                    className={`
+                        ${direction === 'horizontal' ? 'w-[3px] h-full' : 'h-[3px] w-full'}
+                        rounded-full bg-white/10 group-hover:bg-aussie-500/60 transition-colors
+                        ${isDragging ? 'bg-aussie-500 shadow-[0_0_12px_rgba(0,229,153,0.7)]' : ''}
+                    `}
+                />
+            </div>
+        </div>
     );
 };

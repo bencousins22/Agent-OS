@@ -69,12 +69,12 @@ export const Workspace: React.FC<WorkspaceProps> = ({
         return (
             <div className="flex h-full w-full flex-row min-w-0 overflow-hidden">
                  <div className="flex-1 flex flex-col min-w-0 border-r border-os-border">
-                     <div className="h-9 flex bg-os-bg border-b border-os-border shrink-0">
+                     <div className="h-10 flex bg-os-bg/90 backdrop-blur border-b border-os-border shrink-0 sticky top-0 z-10">
                         <div className="flex overflow-x-auto scrollbar-hide flex-1">
                             {editorTabs.map(tab => (
-                                <div key={tab.path} onClick={() => setActiveTabPath(tab.path)} className={`flex items-center gap-2 px-4 min-w-[120px] max-w-[200px] cursor-pointer border-r border-os-border select-none text-[11px] relative group ${activeTabPath === tab.path ? 'bg-os-panel text-white font-medium' : 'text-os-textDim hover:bg-os-panel/50'}`}>
-                                    {activeTabPath === tab.path && <div className="absolute top-0 left-0 right-0 h-[2px] bg-aussie-500" />}
-                                    <FileText className="w-3.5 h-3.5 opacity-70" />
+                                <div key={tab.path} onClick={() => setActiveTabPath(tab.path)} className={`flex items-center gap-2 px-4 min-w-[140px] max-w-[220px] cursor-pointer border-r border-os-border/60 select-none text-[11px] relative group ${activeTabPath === tab.path ? 'bg-os-panel text-white font-medium' : 'text-os-textDim hover:bg-os-panel/50'}`}>
+                                    {activeTabPath === tab.path && <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-aussie-500 to-emerald-400" />}
+                                    <FileText className="w-3.5 h-3.5 opacity-80" />
                                     <span className="truncate flex-1">{tab.title}</span>
                                 </div>
                             ))}
@@ -89,7 +89,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({
                     </div>
                     <Resizable direction="vertical" mode="next" reversed={true} />
                     <div className="h-[200px] flex flex-col bg-os-bg shrink-0 border-t border-os-border">
-                        <div className="h-8 flex items-center px-2 border-b border-os-border gap-4 bg-os-panel shrink-0">
+                        <div className="h-9 flex items-center px-3 border-b border-os-border gap-4 bg-os-panel/90 backdrop-blur sticky top-0 z-10">
                             <button onClick={() => setActivePanel('terminal')} className={`text-[10px] font-bold uppercase tracking-wider h-full px-2 border-b-2 ${activePanel === 'terminal' ? 'border-aussie-500 text-white' : 'border-transparent text-gray-500'}`}>Terminal</button>
                             <button onClick={() => setActivePanel('problems')} className={`text-[10px] font-bold uppercase tracking-wider h-full px-2 border-b-2 ${activePanel === 'problems' ? 'border-aussie-500 text-white' : 'border-transparent text-gray-500'}`}>Problems</button>
                         </div>

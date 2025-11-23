@@ -96,7 +96,7 @@ const ActivityButton = ({ icon: Icon, active, onClick, tooltip }: any) => (
         </button>
 
         {/* Tooltip */}
-        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-1.5 bg-[#1c2128] text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 border border-os-border shadow-xl transform translate-x-2 group-hover:translate-x-0 transition-all">
+        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-1.5 bg-[#0f1218]/95 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 border border-os-border shadow-xl transform translate-x-2 group-hover:translate-x-0 transition-all backdrop-blur">
             {tooltip}
             {/* Arrow */}
             <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-[#1c2128] border-l border-b border-os-border transform rotate-45" />

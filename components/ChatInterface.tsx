@@ -64,7 +64,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, onQuickA
     return (
         <div className="flex-1 flex flex-col min-h-0 bg-os-bg relative group/chat">
             {/* Session Header */}
-            <div className="h-10 border-b border-os-border bg-[#161b22]/50 backdrop-blur-sm flex items-center justify-between px-4 shrink-0 z-20 select-none">
+            <div className="h-10 border-b border-os-border bg-[#121620]/80 backdrop-blur-sm flex items-center justify-between px-3 shrink-0 z-20 select-none sticky top-0">
                 <div className="relative">
                     <button 
                         onClick={() => setShowSessions(!showSessions)}
@@ -98,9 +98,10 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, onQuickA
                         </div>
                     )}
                 </div>
-                <div className="flex items-center gap-2 bg-aussie-500/5 px-2 py-1 rounded-full border border-aussie-500/10">
-                    <Sparkles className="w-3 h-3 text-aussie-500" />
-                    <div className="text-[10px] text-aussie-500 font-bold uppercase tracking-wider">Gemini 3.0 Pro</div>
+                <div className="flex items-center gap-2 bg-aussie-500/10 px-2.5 py-1 rounded-full border border-aussie-500/20 text-[10px] font-bold uppercase tracking-wider text-aussie-500">
+                    <Sparkles className="w-3 h-3" />
+                    <span>Gemini 3.0 Pro</span>
+                    {isProcessing && <span className="w-2 h-2 rounded-full bg-aussie-500 animate-pulse" />}
                 </div>
             </div>
 

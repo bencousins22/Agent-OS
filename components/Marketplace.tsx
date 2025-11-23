@@ -83,7 +83,7 @@ export const Marketplace: React.FC = () => {
             </div>
 
             {/* Categories & Content */}
-            <div className="flex-1 flex flex-col md:flex-row min-h-0 max-w-5xl mx-auto w-full px-3 sm:px-4 md:px-6">
+            <div className="flex-1 flex flex-col md:flex-row min-h-0 max-w-4xl mx-auto w-full px-2 sm:px-3 md:px-4">
                 {/* Sidebar Filters (Desktop) */}
                 <div className="hidden md:flex w-56 flex-col border-r border-os-border bg-[#0f1115] p-4 gap-2 shrink-0">
                     <div className="text-xs font-bold text-gray-500 uppercase mb-2 px-2">Discover</div>
@@ -122,7 +122,7 @@ export const Marketplace: React.FC = () => {
                     
                     {/* Hero / Featured */}
                     {category === 'all' && !search && featuredApp && (
-                        <div className="mb-8 rounded-2xl bg-gradient-to-r from-[#0f332e] to-[#0a1e3f] border border-aussie-500/20 p-6 md:p-8 text-white flex items-center justify-between relative overflow-hidden shadow-2xl shrink-0 group animate-in slide-in-from-top duration-500 max-w-5xl mx-auto">
+                        <div className="mb-8 rounded-2xl bg-gradient-to-r from-[#0f332e] to-[#0a1e3f] border border-aussie-500/20 p-6 md:p-8 text-white flex items-center justify-between relative overflow-hidden shadow-2xl shrink-0 group animate-in slide-in-from-top duration-500 max-w-4xl mx-auto">
                             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
                             <div className="relative z-10 max-w-lg">
                                 <div className="inline-block px-3 py-1 bg-aussie-500/10 rounded-full text-aussie-500 text-[10px] font-bold uppercase mb-4 border border-aussie-500/20 shadow-sm">
@@ -155,7 +155,7 @@ export const Marketplace: React.FC = () => {
                         {search ? `Search Results for "${search}"` : (category === 'all' ? 'Trending Apps' : `${category.charAt(0).toUpperCase() + category.slice(1)} Apps`)}
                     </h3>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto">
                         {filteredApps.map(app => {
                              const Icon = app.icon || Zap;
                              const isInstalled = app.installed;
@@ -166,9 +166,10 @@ export const Marketplace: React.FC = () => {
                                     {/* Subtle glow effect on hover */}
                                     <div className="absolute inset-0 bg-aussie-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                                     
-                                    <div className="flex items-start gap-4 mb-4 relative z-10">
-                                        <div className="w-14 h-14 bg-[#0d1117] rounded-xl flex items-center justify-center border border-os-border group-hover:border-aussie-500/30 transition-colors shrink-0 shadow-inner">
+                                <div className="flex items-start gap-4 mb-4 relative z-10">
+                                        <div className="w-14 h-14 bg-[#0d1117] rounded-xl flex items-center justify-center border border-os-border group-hover:border-aussie-500/30 transition-colors shrink-0 shadow-inner relative">
                                             <Icon className="w-7 h-7 text-gray-400 group-hover:text-aussie-500 transition-colors" strokeWidth={1.5} />
+                                            {isInstalled && <span className="absolute -top-2 -right-2 px-2 py-[2px] rounded-full text-[10px] font-bold bg-emerald-500 text-black border border-white/10">Installed</span>}
                                         </div>
                                         <div className="min-w-0">
                                             <h3 className="font-bold text-base text-gray-100 truncate">{app.name}</h3>
