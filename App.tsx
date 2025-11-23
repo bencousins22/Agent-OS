@@ -182,7 +182,7 @@ const App: React.FC = () => {
                     onClose={() => setShowMobileMenu(false)}
                     activeView={activeView}
                     onNavigate={handleNavigate}
-                    menuItems={NAV_ITEMS}
+                    menuItems={[...NAV_ITEMS]}
                 />
             </Suspense>
 
