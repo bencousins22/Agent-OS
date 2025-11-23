@@ -39,7 +39,7 @@ export const ActivityBar: React.FC<ActivityBarProps> = React.memo(({ activeView,
     }
 
     return (
-        <div className="w-16 flex flex-col items-center py-5 bg-os-bg border-r border-os-border gap-4 z-30 shrink-0 h-full justify-between">
+        <div className="w-16 flex flex-col items-center py-5 bg-os-bg/95 backdrop-blur border-r border-os-border gap-4 z-30 shrink-0 h-full justify-between">
             {/* Logo */}
             <div className="w-10 h-10 bg-aussie-500 rounded-xl flex items-center justify-center text-os-bg font-bold text-lg mb-2 shadow-lg shadow-aussie-500/20 cursor-pointer hover:scale-105 transition-transform shrink-0 relative group">
                 A

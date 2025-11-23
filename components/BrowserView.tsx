@@ -162,8 +162,8 @@ export const BrowserView: React.FC<BrowserViewProps> = memo(({ onInteract }) => 
 });
 
 const Shortcut = ({ label, icon: Icon, onClick }: any) => (
-    <button onClick={onClick} className="flex items-center gap-3 p-4 bg-[#161b22] hover:bg-white/5 border border-gray-800 hover:border-gray-600 rounded-xl text-left transition-all active:scale-95 shadow-sm group">
-        <div className="w-10 h-10 rounded-full bg-aussie-500/10 flex items-center justify-center text-aussie-500 shrink-0 group-hover:bg-aussie-500 group-hover:text-black transition-colors">
+    <button onClick={onClick} className="flex items-center gap-3 p-4 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 rounded-xl text-left transition-all active:scale-95 shadow-sm group backdrop-blur">
+        <div className="w-10 h-10 rounded-full bg-aussie-500/10 flex items-center justify-center text-aussie-500 shrink-0 group-hover:bg-aussie-500 group-hover:text-black transition-colors shadow-[0_8px_24px_-18px_rgba(0,229,153,0.6)]">
             <Icon className="w-5 h-5" />
         </div>
         <span className="font-medium text-gray-300 group-hover:text-white transition-colors">{label}</span>

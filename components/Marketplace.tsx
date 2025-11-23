@@ -189,7 +189,7 @@ export const Marketplace: React.FC = () => {
                                         {isInstalled ? (
                                             <button 
                                                 onClick={() => openApp(app)}
-                                                className="px-4 py-1.5 bg-[#21262d] text-white text-xs font-bold rounded-lg border border-gray-700 hover:bg-[#30363d] transition-colors flex items-center gap-2"
+                                                className="px-4 py-1.5 bg-[#1f2a36] text-white text-xs font-bold rounded-lg border border-aussie-500/30 hover:border-aussie-500/60 transition-colors flex items-center gap-2 shadow-[0_0_10px_-6px_rgba(0,229,153,0.6)]"
                                             >
                                                 Open
                                             </button>
@@ -197,9 +197,10 @@ export const Marketplace: React.FC = () => {
                                             <button 
                                                 onClick={() => installApp(app)}
                                                 disabled={!!installing}
-                                                className="px-4 py-1.5 bg-aussie-500/10 text-aussie-500 text-xs font-bold rounded-lg border border-aussie-500/20 hover:bg-aussie-500 hover:text-black transition-colors flex items-center gap-2 disabled:opacity-50"
+                                                className="px-4 py-1.5 bg-gradient-to-r from-aussie-500 to-emerald-400 text-black text-xs font-bold rounded-lg border border-aussie-500/40 hover:shadow-[0_0_20px_-8px_rgba(0,229,153,0.6)] transition-all flex items-center gap-2 disabled:opacity-60"
                                             >
-                                                {isInstalling ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Get'}
+                                                {isInstalling ? <Loader2 className="w-4 h-4 animate-spin"/> : <Download className="w-4 h-4" />}
+                                                {isInstalling ? 'Installing...' : 'Install'}
                                             </button>
                                         )}
                                     </div>
