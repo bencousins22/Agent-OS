@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, memo, useRef } from 'react';
 import { fs } from '../services/fileSystem';
-import { Bot, Terminal, Globe, FileText, Rocket, Github, Folder, FilePlus, StickyNote, RefreshCw, Settings, Trash2, LayoutGrid, Zap, Monitor, Image as ImageIcon, AlignLeft, Grid } from 'lucide-react';
+import { Bot, Terminal, Globe, FileText, Rocket, Github, Folder, FilePlus, StickyNote, RefreshCw, Settings, Trash2, LayoutGrid, Zap, Monitor, Image as ImageIcon, AlignLeft, Grid, Code2, Calendar } from 'lucide-react';
 import { MainView, DesktopItem, Widget } from '../types';
 import { notify } from '../services/notification';
 import { dashboardState, Wallpaper } from '../services/dashboardState';
@@ -10,6 +10,8 @@ import { WindowManager } from './WindowManager';
 import { NoteWidget } from './NoteWidget';
 import { julesAgent } from '../services/jules';
 import { bus } from '../services/eventBus';
+import { NAV_ITEMS } from './ActivityBar';
+import { SystemInfo } from './SystemInfo';
 import { WebOsDock } from './WebOsDock';
 
 interface Props {
@@ -291,6 +293,54 @@ export const Dashboard: React.FC<Props> = memo(({ onNavigate }) => {
             onTouchMove={handleMove}
             onTouchEnd={handleEnd}
         >
+            {/* Left Sidebar: All components quick-launch */}
+            <div className="absolute inset-y-4 left-4 w-64 bg-[#0f1216]/80 backdrop-blur-xl border border-white/5 rounded-2xl shadow-2xl shadow-black/30 z-30 hidden xl:flex flex-col">
+                <div className="px-4 py-3 border-b border-white/5 flex items-center gap-2">
+                    <LayoutGrid className="w-4 h-4 text-aussie-500" />
+                    <div className="text-xs font-bold uppercase tracking-wider text-gray-400">All Components</div>
+                </div>
+                <div className="flex-1 overflow-auto custom-scrollbar p-3 space-y-2">
+                    {[...NAV_ITEMS].map(item => (
+                        <button
+                            key={item.view}
+                            onClick={() => onNavigate(item.view as MainView)}
+                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm border border-transparent hover:border-aussie-500/40 hover:bg-aussie-500/5 transition-colors ${activeView === item.view ? 'bg-aussie-500/10 border-aussie-500 text-white' : 'text-gray-300'}`}
+                        >
+                            <item.icon className="w-4 h-4" />
+                            <span className="truncate">{item.tooltip}</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Right Sidebar: System snapshot and quick actions */}
+            <div className="absolute inset-y-4 right-4 w-80 bg-[#0f1216]/80 backdrop-blur-xl border border-white/5 rounded-2xl shadow-2xl shadow-black/30 z-30 hidden 2xl:flex flex-col overflow-hidden">
+                <div className="px-4 py-3 border-b border-white/5 flex items-center gap-2">
+                    <Monitor className="w-4 h-4 text-blue-400" />
+                    <div className="text-xs font-bold uppercase tracking-wider text-gray-400">System Snapshot</div>
+                </div>
+                <div className="flex-1 overflow-auto custom-scrollbar">
+                    <SystemInfo />
+                </div>
+                <div className="border-t border-white/5 p-3 bg-[#0c0f15]">
+                    <div className="text-[11px] text-gray-500 font-bold uppercase mb-2">Quick Actions</div>
+                    <div className="grid grid-cols-2 gap-2">
+                        <button onClick={() => onNavigate('browser')} className="px-3 py-2 rounded-lg bg-white/5 text-gray-200 hover:bg-aussie-500 hover:text-black transition-colors text-sm flex items-center gap-2">
+                            <Globe className="w-4 h-4" /> Browser
+                        </button>
+                        <button onClick={() => onNavigate('code')} className="px-3 py-2 rounded-lg bg-white/5 text-gray-200 hover:bg-aussie-500 hover:text-black transition-colors text-sm flex items-center gap-2">
+                            <Code2 className="w-4 h-4" /> Editor
+                        </button>
+                        <button onClick={() => onNavigate('scheduler')} className="px-3 py-2 rounded-lg bg-white/5 text-gray-200 hover:bg-aussie-500 hover:text-black transition-colors text-sm flex items-center gap-2">
+                            <Calendar className="w-4 h-4" /> Scheduler
+                        </button>
+                        <button onClick={() => onNavigate('deploy')} className="px-3 py-2 rounded-lg bg-white/5 text-gray-200 hover:bg-aussie-500 hover:text-black transition-colors text-sm flex items-center gap-2">
+                            <Rocket className="w-4 h-4" /> Deploy
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             {/* Dynamic Wallpaper */}
             <div className="absolute inset-0 z-0 pointer-events-none">
                 <div className={`absolute inset-0 ${wallpaper.type === 'gradient' || wallpaper.type === 'solid' ? wallpaper.value : ''}`} 
@@ -300,7 +350,7 @@ export const Dashboard: React.FC<Props> = memo(({ onNavigate }) => {
             </div>
 
             {/* Web OS Dock */}
-            <div className="absolute top-4 left-4 z-30 hidden md:block">
+            <div className="absolute top-4 left-4 xl:left-72 z-30 hidden md:block">
                 <WebOsDock onNavigate={onNavigate} />
             </div>
 
