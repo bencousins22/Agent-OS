@@ -100,7 +100,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({
 
     return (
         <div className={`flex-1 flex flex-col min-w-0 bg-os-bg relative overflow-hidden h-full`}>
-            {activeView === 'dashboard' && <Dashboard onNavigate={onNavigate} />}
+            {activeView === 'dashboard' && <Dashboard onNavigate={onNavigate} activeView={activeView} />}
             {activeView === 'browser' && <BrowserView onInteract={(q) => { onSendMessage(q); setChatOpen(true); }} />}
             {activeView === 'flow' && <FlowEditor />}
             {activeView === 'projects' && <ProjectView />}

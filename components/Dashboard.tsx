@@ -16,6 +16,7 @@ import { WebOsDock } from './WebOsDock';
 
 interface Props {
     onNavigate: (view: MainView) => void;
+    activeView: MainView;
 }
 
 interface IconPosition {
@@ -48,7 +49,7 @@ const ClockWidget: React.FC<{ onClose: () => void }> = memo(({ onClose }) => {
     );
 });
 
-export const Dashboard: React.FC<Props> = memo(({ onNavigate }) => {
+export const Dashboard: React.FC<Props> = memo(({ onNavigate, activeView }) => {
     const [icons, setIcons] = useState<DesktopItem[]>([]);
     const [widgets, setWidgets] = useState<Widget[]>([]);
     const [wallpaper, setWallpaper] = useState<Wallpaper>(dashboardState.getWallpaper());
