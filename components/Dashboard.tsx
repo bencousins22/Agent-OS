@@ -10,6 +10,7 @@ import { WindowManager } from './WindowManager';
 import { NoteWidget } from './NoteWidget';
 import { julesAgent } from '../services/jules';
 import { bus } from '../services/eventBus';
+import { WebOsDock } from './WebOsDock';
 
 interface Props {
     onNavigate: (view: MainView) => void;
@@ -296,6 +297,11 @@ export const Dashboard: React.FC<Props> = memo(({ onNavigate }) => {
                      style={wallpaper.type === 'image' ? { backgroundImage: `url(${wallpaper.value})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}} 
                 />
                 <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+            </div>
+
+            {/* Web OS Dock */}
+            <div className="absolute top-4 left-4 z-30 hidden md:block">
+                <WebOsDock onNavigate={onNavigate} />
             </div>
 
             {/* Desktop Icons Layer */}
