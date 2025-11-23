@@ -1,58 +1,74 @@
 
-const JULES_API_ENDPOINT = 'https://jules.googleapis.com/v1alpha';
+const JULES_API_BASE_URL = 'https://jules.googleapis.com/v1alpha';
 
 const getApiKey = () => {
   const apiKey = process.env.JULES_API_KEY;
   if (!apiKey) {
-    throw new Error('JULES_API_KEY environment variable not set.');
+    throw new Error('JULES_API_KEY is not set in the environment variables.');
   }
   return apiKey;
 };
 
-const fetchJules = async (path: string, options: RequestInit = {}) => {
+const makeApiRequest = async (endpoint: string, options: RequestInit = {}) => {
   const apiKey = getApiKey();
-  const response = await fetch(`${JULES_API_ENDPOINT}/${path}`, {
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+    'X-Goog-Api-Key': apiKey,
+    ...options.headers,
+  });
+
+  const response = await fetch(`${JULES_API_BASE_URL}/${endpoint}`, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Goog-Api-Key': apiKey,
-      ...options.headers,
-    },
+    headers,
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(`Jules API error: ${error.message}`);
+    const errorBody = await response.text();
+    throw new Error(`API request failed with status ${response.status}: ${errorBody}`);
+  }
+
+  // Handle empty responses for methods like sendMessage
+  if (response.headers.get('Content-Length') === '0' || response.status === 204) {
+    return null;
   }
 
   return response.json();
 };
 
-export const listSources = () => {
-  return fetchJules('sources');
-};
+export const julesAPI = {
+  listSources: async () => {
+    return makeApiRequest('sources');
+  },
 
-export const createSession = (prompt: string, source: string) => {
-  return fetchJules('sessions', {
-    method: 'POST',
-    body: JSON.stringify({
+  createSession: async (prompt: string, source: string, startingBranch: string, title: string) => {
+    const body = {
       prompt,
       sourceContext: {
         source,
         githubRepoContext: {
-          startingBranch: 'main',
+          startingBranch,
         },
       },
       automationMode: 'AUTO_CREATE_PR',
-      title: prompt,
-    }),
-  });
-};
+      title,
+    };
+    return makeApiRequest('sessions', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
 
-export const getSession = (sessionId: string) => {
-  return fetchJules(`sessions/${sessionId}`);
-};
+  listActivities: async (sessionId: string) => {
+    return makeApiRequest(`sessions/${sessionId}/activities?pageSize=30`);
+  },
 
-export const listActivities = (sessionId: string) => {
-    return fetchJules(`sessions/${sessionId}/activities`);
+  sendMessage: async (sessionId: string, prompt: string) => {
+    const body = {
+      prompt,
+    };
+    return makeApiRequest(`sessions/${sessionId}:sendMessage`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
 };
