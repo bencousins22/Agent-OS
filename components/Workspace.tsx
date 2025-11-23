@@ -67,7 +67,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({
         }
 
         return (
-            <div className="flex h-full w-full flex-row">
+            <div className="flex h-full w-full flex-row min-w-0 overflow-hidden">
                  <div className="flex-1 flex flex-col min-w-0 border-r border-os-border">
                      <div className="h-9 flex bg-os-bg border-b border-os-border shrink-0">
                         <div className="flex overflow-x-auto scrollbar-hide flex-1">
@@ -80,7 +80,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({
                             ))}
                         </div>
                     </div>
-                    <div className="flex-1 relative">
+                    <div className="flex-1 relative min-w-0">
                         <MonacoEditor 
                             filePath={activeTabPath} 
                             language={editorTabs.find(t=>t.path===activeTabPath)?.language||'plaintext'} 
@@ -97,7 +97,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({
                     </div>
                  </div>
                  <Resizable direction="horizontal" mode="next" reversed={true} />
-                 <div className="w-[250px] flex flex-col bg-os-bg shrink-0 border-l border-os-border">
+                 <div className="flex flex-col bg-os-bg shrink-0 border-l border-os-border min-w-[220px]" style={{ width: 'clamp(220px, 18vw, 320px)' }}>
                     <div className="h-9 flex bg-os-panel border-b border-os-border shrink-0 items-center px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400">Explorer</div>
                     <div className="flex-1 overflow-hidden relative"><FileExplorer onFileClick={openFile} /></div>
                  </div>
@@ -106,7 +106,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({
     };
 
     return (
-        <div className={`flex-1 flex flex-col min-w-0 bg-os-bg relative overflow-hidden h-full`}>
+        <div className={`flex-1 flex flex-col min-w-0 bg-os-bg relative h-full overflow-auto`}>
             {activeView === 'dashboard' && <Dashboard onNavigate={onNavigate} activeView={activeView} />}
             {activeView === 'browser' && <BrowserView onInteract={(q) => { onSendMessage(q); setChatOpen(true); }} />}
             {activeView === 'flow' && <FlowEditor />}

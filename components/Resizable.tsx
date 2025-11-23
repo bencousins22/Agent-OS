@@ -7,6 +7,7 @@ interface Props {
     reversed?: boolean; // If true, dragging left/up increases size (for Right/Bottom panels)
     minSize?: number;
     maxSize?: number;
+    onResize?: (size: number) => void;
 }
 
 export const Resizable: React.FC<Props> = ({ 
@@ -14,7 +15,8 @@ export const Resizable: React.FC<Props> = ({
     mode = 'parent', 
     reversed = false,
     minSize = 200,
-    maxSize = 800
+    maxSize = 800,
+    onResize
 }) => {
     const [isDragging, setIsDragging] = useState(false);
     const handleRef = useRef<HTMLDivElement>(null);
@@ -42,6 +44,7 @@ export const Resizable: React.FC<Props> = ({
                     const newWidth = e.clientX - parent.getBoundingClientRect().left;
                     if (newWidth > minSize && newWidth < maxSize) {
                         parent.style.width = `${newWidth}px`;
+                        onResize?.(newWidth);
                     }
                 }
             } else if (mode === 'next') {
@@ -58,12 +61,14 @@ export const Resizable: React.FC<Props> = ({
                         const newWidth = rightEdge - e.clientX;
                         if (newWidth > minSize && newWidth < maxSize) {
                             target.style.width = `${newWidth}px`;
+                            onResize?.(newWidth);
                         }
                     } else {
                         // Dragging right increases width (Left Panel)
                         const newWidth = e.clientX - rect.left;
                         if (newWidth > minSize && newWidth < maxSize) {
                             target.style.width = `${newWidth}px`;
+                            onResize?.(newWidth);
                         }
                     }
                 } else {
@@ -106,7 +111,7 @@ export const Resizable: React.FC<Props> = ({
             ref={handleRef}
             className={`
                 ${direction === 'horizontal' 
-                    ? 'w-1 cursor-col-resize hover:bg-aussie-500/50 z-50 flex-shrink-0' 
+                    ? 'w-1 h-full cursor-col-resize hover:bg-aussie-500/50 z-50 flex-shrink-0' 
                     : 'h-1 w-full cursor-row-resize hover:bg-aussie-500/50 z-50 bg-[#0d1117] border-t border-os-border flex-shrink-0'}
                 transition-colors
                 ${isDragging ? 'bg-aussie-500' : 'bg-transparent'}

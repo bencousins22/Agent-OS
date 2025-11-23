@@ -95,34 +95,65 @@ const BootLoader = () => {
     );
 };
 
+const CHAT_WIDTH_KEY = 'aussie_chat_width';
+const SIDEBAR_KEY = 'aussie_sidebar_open';
+const VIEW_KEY = 'aussie_last_view';
+
+const clampChatWidth = (value: number, viewport: number) => {
+    const min = 280;
+    const max = Math.min(Math.max(Math.floor(viewport * 0.45), 360), 640);
+    return Math.min(Math.max(value, min), max);
+};
+
 const App: React.FC = () => {
-    const [activeView, setActiveView] = useState<MainView>('dashboard');
+    const [activeView, setActiveView] = useState<MainView>(() => {
+        try {
+            const stored = localStorage.getItem(VIEW_KEY) as MainView | null;
+            return stored || 'dashboard';
+        } catch {
+            return 'dashboard';
+        }
+    });
     const [input, setInput] = useState('');
     const [activePanel, setActivePanel] = useState<'terminal' | 'problems'>('terminal');
     const [showSpotlight, setShowSpotlight] = useState(false);
     const [booting, setBooting] = useState(true);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-    const [chatOpen, setChatOpen] = useState(true);
+    const [chatOpen, setChatOpen] = useState(() => window.innerWidth >= 768);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [mobileCodeView, setMobileCodeView] = useState<'editor' | 'terminal' | 'files'>('editor');
     const [isNavPending, startNavTransition] = useTransition();
-    const [showSidebar, setShowSidebar] = useState(true);
+    const [showSidebar, setShowSidebar] = useState(() => {
+        try {
+            const stored = localStorage.getItem(SIDEBAR_KEY);
+            return stored ? stored === 'true' : true;
+        } catch {
+            return true;
+        }
+    });
     const [cursorLocation, setCursorLocation] = useState<{ line: number; column: number; path: string | null }>({
         line: 1,
         column: 1,
         path: null
     });
+    const [chatWidth, setChatWidth] = useState(() => {
+        const viewport = typeof window !== 'undefined' ? window.innerWidth : 1280;
+        try {
+            const stored = Number(localStorage.getItem(CHAT_WIDTH_KEY));
+            if (!isNaN(stored) && stored > 0) return clampChatWidth(stored, viewport);
+        } catch {}
+        return clampChatWidth(viewport * 0.28, viewport);
+    });
 
     const { messages, isProcessing, workflowPhase, terminalBlocks, editorTabs, activeTabPath, setActiveTabPath, openFile, mediaFile, setMediaFile, processUserMessage, isLive, isTtsEnabled, toggleLive, toggleTts, clearMessages, handleFileUpload } = useAgent();
 
     const handleNavigate = (view: MainView) => {
-        startNavTransition(() => {
-            if (view === 'code' && activeTabPath === null && editorTabs.length > 0) {
-                setActiveTabPath(editorTabs[0].path);
-            }
-            setActiveView(view);
-        });
+        if (view === 'code' && activeTabPath === null && editorTabs.length > 0) {
+            setActiveTabPath(editorTabs[0].path);
+        }
+        setActiveView(view);
+        try { localStorage.setItem(VIEW_KEY, view); } catch {}
         if (window.innerWidth < 768) {
             if (view === 'browser') setChatOpen(true);
             setShowMobileMenu(false);
@@ -149,6 +180,8 @@ const App: React.FC = () => {
             setIsMobile(mobile);
             if (!mobile && !chatOpen) setChatOpen(true);
             if (!mobile && showMobileMenu) setShowMobileMenu(false);
+            const nextWidth = clampChatWidth(chatWidth, window.innerWidth);
+            setChatWidth(nextWidth);
         };
         window.addEventListener('resize', handleResize);
         handleResize();
@@ -165,10 +198,24 @@ const App: React.FC = () => {
     }, [messages.length, isMobile]);
 
     useEffect(() => {
+        if (!isMobile && !chatOpen) {
+            setChatOpen(true);
+        }
+    }, [isMobile, chatOpen]);
+
+    useEffect(() => {
         if (activeTabPath) {
             setCursorLocation(prev => ({ ...prev, path: activeTabPath }));
         }
     }, [activeTabPath]);
+
+    useEffect(() => {
+        try { localStorage.setItem(CHAT_WIDTH_KEY, String(chatWidth)); } catch {}
+    }, [chatWidth]);
+
+    useEffect(() => {
+        try { localStorage.setItem(SIDEBAR_KEY, String(showSidebar)); } catch {}
+    }, [showSidebar]);
 
     if (booting) return <BootLoader />;
 
@@ -232,38 +279,57 @@ const App: React.FC = () => {
                 </div>
             )}
 
-            <div className={`flex flex-1 min-w-0 relative ${isMobile ? 'pb-[70px]' : ''}`}>
+            <div className={`flex flex-1 min-w-0 relative overflow-hidden ${isMobile ? 'pb-[70px]' : ''}`}>
                 {/* Main Content Area - Center */}
-                <div className={`flex-1 flex flex-col min-h-0 relative ${isMobileBrowserSplit ? 'h-[55%]' : 'h-full'}`}>
-                    <Suspense fallback={<ComponentLoader />}>
-                        <Workspace
-                            activeView={activeView}
-                            onNavigate={handleNavigate}
-                            onSendMessage={handleSendMessage}
-                            setChatOpen={setChatOpen}
-                            isMobile={isMobile}
-                            editorTabs={editorTabs}
-                            activeTabPath={activeTabPath}
-                            setActiveTabPath={setActiveTabPath}
-                            activePanel={activePanel}
-                            setActivePanel={setActivePanel}
-                            terminalBlocks={terminalBlocks}
-                            openFile={openFile}
-                            mobileCodeView={mobileCodeView}
-                            setMobileCodeView={setMobileCodeView}
-                            onCursorChange={setCursorLocation}
-                        />
-                    </Suspense>
+                <div className={`flex-1 flex flex-col min-h-0 min-w-0 relative ${isMobileBrowserSplit ? 'h-[55%]' : 'h-full'}`}>
+                    <div className="w-full h-full max-w-screen-2xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 overflow-auto">
+                        <Suspense fallback={<ComponentLoader />}>
+                            <Workspace
+                                activeView={activeView}
+                                onNavigate={handleNavigate}
+                                onSendMessage={handleSendMessage}
+                                setChatOpen={setChatOpen}
+                                isMobile={isMobile}
+                                editorTabs={editorTabs}
+                                activeTabPath={activeTabPath}
+                                setActiveTabPath={setActiveTabPath}
+                                activePanel={activePanel}
+                                setActivePanel={setActivePanel}
+                                terminalBlocks={terminalBlocks}
+                                openFile={openFile}
+                                mobileCodeView={mobileCodeView}
+                                setMobileCodeView={setMobileCodeView}
+                                onCursorChange={setCursorLocation}
+                            />
+                        </Suspense>
+                    </div>
                 </div>
 
+                {/* Desktop divider for chat resize */}
+                {!isMobile && (
+                    <Suspense fallback={<ComponentLoader />}>
+                        <Resizable
+                            direction="horizontal"
+                            mode="next"
+                            reversed
+                            minSize={280}
+                            maxSize={640}
+                            onResize={(w) => setChatWidth(w)}
+                        />
+                    </Suspense>
+                )}
+
                 {/* Chat Panel - Right Sidebar */}
-                <div className={`
-                    ${isMobile
-                        ? isMobileBrowserSplit
-                            ? 'absolute bottom-0 left-0 right-0 h-[45%] z-50 border-t border-os-border shadow-2xl bg-[#14161b] flex flex-col'
-                            : `absolute inset-0 z-50 bg-os-bg/95 backdrop-blur-xl transition-transform duration-300 ease-out flex flex-col ${chatOpen ? 'translate-y-0' : 'translate-y-[110%]'}`
-                        : `relative flex flex-col bg-os-bg w-[360px] border-l border-os-border`}
-                `}>
+                <div
+                    className={`
+                        ${isMobile
+                            ? isMobileBrowserSplit
+                                ? 'absolute bottom-0 left-0 right-0 h-[45%] z-50 border-t border-os-border shadow-2xl bg-[#14161b] flex flex-col min-w-0'
+                                : `absolute inset-0 z-50 bg-os-bg/95 backdrop-blur-xl transition-transform duration-300 ease-out flex flex-col min-w-0 ${chatOpen ? 'translate-y-0' : 'translate-y-[110%]'}`
+                            : `relative flex flex-col bg-os-bg min-w-[320px] max-w-[520px] flex-shrink-0 ${chatOpen ? 'border-l border-os-border' : 'hidden'}`}
+                    `}
+                    style={!isMobile && chatOpen ? { width: `${chatWidth}px` } : undefined}
+                >
                     <div className="h-12 border-b border-os-border flex items-center justify-between px-4 bg-os-panel shrink-0 pt-safe">
                         <div className="flex items-center gap-3">
                             <div className={`w-2 h-2 rounded-full ${isProcessing || isLive ? 'bg-aussie-500 animate-pulse' : 'bg-aussie-500'}`} />
@@ -298,11 +364,6 @@ const App: React.FC = () => {
                             <button onClick={() => handleSendMessage()} disabled={!input.trim() && !isLive} className={`p-3 rounded-full shrink-0 ${input.trim() ? 'bg-aussie-500 text-black' : 'bg-white/10 text-gray-500'}`}><ArrowUp className="w-5 h-5 stroke-[3]" /></button>
                         </div>
                     </div>
-                    {!isMobile && (
-                        <Suspense fallback={null}>
-                            <Resizable direction="horizontal" mode="parent" minSize={300} maxSize={600} />
-                        </Suspense>
-                    )}
                 </div>
             </div>
 
