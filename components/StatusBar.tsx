@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { GitBranch, AlertCircle, XCircle, Check, Wifi } from 'lucide-react';
 import { realGit } from '../services/gitReal';
@@ -8,7 +7,7 @@ interface Props {
     activeTab: EditorTab | undefined;
 }
 
-export const StatusBar: React.FC<Props> = ({ activeTab }) => {
+export const StatusBar: React.FC<Props> = React.memo(({ activeTab }) => {
     const [branch, setBranch] = useState('main');
     const [isDirty, setIsDirty] = useState(false);
 
@@ -81,4 +80,4 @@ export const StatusBar: React.FC<Props> = ({ activeTab }) => {
             </div>
         </div>
     );
-};
+});

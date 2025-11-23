@@ -1,0 +1,34 @@
+/**
+ * APM: Aussie Package Manager
+ * Simulates installing packages by mapping them to ESM.sh URLs
+ */
+class PackageManagerService {
+    constructor() {
+        this.installedPackages = new Map();
+        // Pre-installed standard library mocks could go here
+    }
+    async install(packageName) {
+        // In a real browser environment, we can't download the NPM tarball and unzip it easily without WebContainers.
+        // Instead, we will use the ES Module standard.
+        // When `require('lodash')` is called, we will return an object that dynamically imports from esm.sh.
+        const url = `https://esm.sh/${packageName}`;
+        // Verify it exists by doing a HEAD request
+        try {
+            const res = await fetch(url, { method: 'HEAD' });
+            if (!res.ok)
+                throw new Error(`Package not found: ${res.statusText}`);
+            this.installedPackages.set(packageName, url);
+            return `Package ${packageName} installed from ${url}`;
+        }
+        catch (e) {
+            throw new Error(`Failed to install ${packageName}: ${e.message}`);
+        }
+    }
+    getPackageUrl(name) {
+        return this.installedPackages.get(name);
+    }
+    getInstalled() {
+        return Array.from(this.installedPackages.keys());
+    }
+}
+export const apm = new PackageManagerService();

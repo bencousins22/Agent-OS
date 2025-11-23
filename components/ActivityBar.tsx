@@ -24,7 +24,7 @@ export const NAV_ITEMS = [
     { view: 'deploy', icon: Rocket, tooltip: 'Deploy' },
 ] as const;
 
-export const ActivityBar: React.FC<ActivityBarProps> = ({ activeView, onNavigate, onSpotlight, isMobile, onMenuToggle }) => {
+export const ActivityBar: React.FC<ActivityBarProps> = React.memo(({ activeView, onNavigate, onSpotlight, isMobile, onMenuToggle }) => {
     
     if (isMobile) {
         return (
@@ -64,7 +64,7 @@ export const ActivityBar: React.FC<ActivityBarProps> = ({ activeView, onNavigate
             </div>
         </div>
     );
-};
+});
 
 const MobileTab = ({ icon: Icon, label, active, onClick }: any) => (
     <button 

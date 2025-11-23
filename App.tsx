@@ -107,6 +107,7 @@ const App: React.FC = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [mobileCodeView, setMobileCodeView] = useState<'editor' | 'terminal' | 'files'>('editor');
     const [isNavPending, startNavTransition] = useTransition();
+    const [showSidebar, setShowSidebar] = useState(true);
 
     const { messages, isProcessing, workflowPhase, terminalBlocks, editorTabs, activeTabPath, setActiveTabPath, openFile, mediaFile, setMediaFile, processUserMessage, isLive, isTtsEnabled, toggleLive, toggleTts, clearMessages, handleFileUpload } = useAgent();
 
@@ -317,4 +318,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-    const [showSidebar, setShowSidebar] = useState(true);

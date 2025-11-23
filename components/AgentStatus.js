@@ -1,8 +1,7 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
-import { WorkflowPhase } from '../types';
 import { Activity, BrainCircuit, Code2, Microscope, Rocket, CheckCircle } from 'lucide-react';
-
-export const AgentStatus: React.FC<{ state: WorkflowPhase }> = React.memo(({ state }) => {
+export const AgentStatus = React.memo(({ state }) => {
     const getConfig = () => {
         switch (state) {
             case 'exploring': return { color: 'text-blue-400', bg: 'bg-blue-400/10', border: 'border-blue-400/20', icon: Microscope, label: 'Exploring' };
@@ -15,26 +14,10 @@ export const AgentStatus: React.FC<{ state: WorkflowPhase }> = React.memo(({ sta
             default: return { color: 'text-gray-400', bg: 'bg-gray-800', border: 'border-gray-700', icon: Activity, label: 'Standby' };
         }
     };
-
     const config = getConfig();
     const Icon = config.icon;
-
-    return (
-        <div className={`
+    return (_jsxs("div", { className: `
             flex items-center justify-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 min-w-[100px]
             ${config.bg} ${config.border}
-        `}>
-            {state !== 'idle' && state !== 'error' ? (
-                <div className="relative flex items-center justify-center w-3 h-3 shrink-0">
-                     <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping ${config.color.replace('text', 'bg')}`}></span>
-                     <span className={`relative inline-flex rounded-full h-2 w-2 ${config.color.replace('text', 'bg')}`}></span>
-                </div>
-            ) : (
-                <Icon className={`w-3.5 h-3.5 ${config.color} shrink-0`} />
-            )}
-            <span className={`text-[10px] font-bold uppercase tracking-wider ${config.color}`}>
-                {config.label}
-            </span>
-        </div>
-    );
+        `, children: [state !== 'idle' && state !== 'error' ? (_jsxs("div", { className: "relative flex items-center justify-center w-3 h-3 shrink-0", children: [_jsx("span", { className: `absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping ${config.color.replace('text', 'bg')}` }), _jsx("span", { className: `relative inline-flex rounded-full h-2 w-2 ${config.color.replace('text', 'bg')}` })] })) : (_jsx(Icon, { className: `w-3.5 h-3.5 ${config.color} shrink-0` })), _jsx("span", { className: `text-[10px] font-bold uppercase tracking-wider ${config.color}`, children: config.label })] }));
 });
