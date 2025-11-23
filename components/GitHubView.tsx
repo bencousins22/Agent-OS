@@ -69,9 +69,7 @@ export const GitHubView: React.FC = () => {
 
     const handlePush = async () => {
         if(!user) return notify.error("Not Connected", "Please connect your GitHub account in Settings.");
-        notify.info('Git Push', 'Pushing to remote...');
-        await new Promise(r => setTimeout(r, 1500));
-        notify.success('Git Push', 'Pushed main to origin (simulated).');
+        notify.error('Push Unavailable', 'Pushing from the browser build requires a network-enabled git proxy. Use the CLI or configure a backend hook.');
     };
 
     return (

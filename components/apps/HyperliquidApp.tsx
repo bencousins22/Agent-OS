@@ -24,10 +24,7 @@ export const HyperliquidApp: React.FC = () => {
 
     useEffect(() => {
         // Mock Live Price Feed
-        const interval = setInterval(() => {
-            setPrice(prev => prev * (1 + (Math.random() - 0.5) * 0.001));
-        }, 1000);
-        return () => clearInterval(interval);
+        // In real mode price should come from API; keep static until configured
     }, []);
 
     const connectWallet = () => {
@@ -35,13 +32,18 @@ export const HyperliquidApp: React.FC = () => {
             notify.error("Connection Failed", "Please enter a wallet address (e.g. 0x...)");
             return;
         }
+        if (!hyperliquid.isConfigured()) {
+            notify.error("API Missing", "Set VITE_HYPERLIQUID_API to enable trading/backtests.");
+            return;
+        }
         hyperliquid.connect(wallet);
         setIsConnected(true);
-        notify.success("Hyperliquid", "Connected to Mainnet.");
+        notify.success("Hyperliquid", "Connected.");
     };
 
     const placeOrder = async (side: 'buy' | 'sell') => {
         if (!isConnected) return notify.error("Error", "Connect Wallet first");
+        if (!hyperliquid.isConfigured()) return notify.error("API Missing", "Set VITE_HYPERLIQUID_API to enable trading.");
         
         try {
             const res = await hyperliquid.postExchange({
@@ -56,17 +58,15 @@ export const HyperliquidApp: React.FC = () => {
                 }]
             });
             
-            if (res.status === 'ok') {
-                notify.success("Order Filled", `${side.toUpperCase()} ${orderSize} ${selectedCoin} @ ${price.toFixed(2)}`);
-                refreshPositions();
-            }
-        } catch (e) {
-            notify.error("Order Failed", "API Execution Error");
+            notify.success("Order Sent", JSON.stringify(res));
+            refreshPositions();
+        } catch (e: any) {
+            notify.error("Order Failed", e.message || "API Execution Error");
         }
     };
 
     const refreshPositions = async () => {
-        if (!isConnected) return;
+        if (!isConnected || !hyperliquid.isConfigured()) return;
         const state = await hyperliquid.getInfo('clearinghouseState');
         if (state && state.assetPositions) {
             setPositions(state.assetPositions);
@@ -74,11 +74,19 @@ export const HyperliquidApp: React.FC = () => {
     };
 
     const runBacktest = async () => {
+        if (!hyperliquid.isConfigured()) {
+            return notify.error("API Missing", "Set VITE_HYPERLIQUID_API to run backtests.");
+        }
         setIsBacktesting(true);
         setBacktestResult(null);
-        const res = await hyperliquid.runBacktest({ leverage });
-        setBacktestResult(res.equityCurve);
-        setIsBacktesting(false);
+        try {
+            const res = await hyperliquid.runBacktest({ leverage });
+            setBacktestResult(res.equityCurve);
+        } catch (e: any) {
+            notify.error("Backtest Failed", e.message || "API error");
+        } finally {
+            setIsBacktesting(false);
+        }
     };
 
     return (
@@ -105,6 +113,12 @@ export const HyperliquidApp: React.FC = () => {
 
             {/* Content */}
             <div className="flex-1 overflow-hidden relative">
+                {!hyperliquid.isConfigured() && (
+                    <div className="absolute top-0 left-0 right-0 z-20 bg-amber-500/10 border-b border-amber-500/30 text-amber-200 text-xs font-bold px-4 py-3 flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" />
+                        Hyperliquid API not configured. Set VITE_HYPERLIQUID_API to enable trading and backtests.
+                    </div>
+                )}
                 
                 {/* TRADE TAB */}
                 {activeTab === 'trade' && (
@@ -238,11 +252,11 @@ export const HyperliquidApp: React.FC = () => {
                                 <h2 className="text-2xl font-bold flex items-center gap-3"><TrendingUp className="w-6 h-6 text-aussie-500"/> Strategy Backtester</h2>
                                 <button 
                                     onClick={runBacktest}
-                                    disabled={isBacktesting}
+                                    disabled={isBacktesting || !hyperliquid.isConfigured()}
                                     className="px-6 py-2 bg-aussie-500 text-black font-bold rounded-lg flex items-center gap-2 disabled:opacity-50 shadow-lg hover:bg-aussie-600 transition-all active:scale-95"
                                 >
                                     {isBacktesting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-                                    Run Simulation
+                                    Run Backtest
                                 </button>
                             </div>
 
@@ -291,7 +305,7 @@ export const HyperliquidApp: React.FC = () => {
                                 ) : (
                                     <div className="flex-1 flex flex-col items-center justify-center text-gray-600">
                                         <BarChart className="w-16 h-16 opacity-20 mb-4" />
-                                        <p className="text-sm">Ready to start simulation</p>
+                                        <p className="text-sm">Configure API to run backtests</p>
                                     </div>
                                 )}
                                 {backtestResult && (
@@ -315,7 +329,7 @@ export const HyperliquidApp: React.FC = () => {
                             
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block text-sm font-bold mb-2 text-gray-400">API Secret (Mock)</label>
+                                    <label className="block text-sm font-bold mb-2 text-gray-400">API Secret</label>
                                     <input type="password" placeholder="••••••••••••••••" className="w-full bg-[#161b22] border border-gray-700 rounded-lg p-4 outline-none focus:border-aussie-500 transition-colors" />
                                 </div>
                                 
@@ -328,10 +342,9 @@ export const HyperliquidApp: React.FC = () => {
                                     <div className="flex items-start gap-3 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
                                         <AlertCircle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
                                         <div className="text-xs text-yellow-200 leading-relaxed">
-                                            <strong className="block mb-1 font-bold text-yellow-500">Simulation Mode</strong>
-                                            This is a simulated terminal using mock Hyperliquid L1 endpoints.
-                                            Real trading requires a backend proxy for signing transactions securely. 
-                                            Do not enter real private keys.
+                                            <strong className="block mb-1 font-bold text-yellow-500">Backend Required</strong>
+                                            Real trading/backtests require a configured Hyperliquid API proxy (VITE_HYPERLIQUID_API) that signs transactions securely.
+                                            Do not enter real private keys unless your proxy is configured and trusted.
                                         </div>
                                     </div>
                                 </div>

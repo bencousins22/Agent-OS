@@ -33,15 +33,18 @@ export const BrowserView: React.FC<BrowserViewProps> = memo(({ onInteract }) => 
                 const path = url.replace('http://localhost:3000', '/workspace').replace('file://', '');
                 content = fs.exists(path) ? fs.readFile(path) : `<html><body style="background:#14161b;color:#8b949e;display:flex;justify-content:center;align-items:center;height:100vh"><h1>404 Not Found</h1></body></html>`;
             } else if (!isStartPage) {
-                content = `<html><body style="background:#0d1117;color:#e6edf3;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;padding:40px;"><h1>${url}</h1><p>External site simulation.</p></body></html>`;
+                content = `<html><body style="background:#0d1117;color:#e6edf3;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px;">
+                    <h1 style="margin-bottom:12px;">External browsing unavailable</h1>
+                    <p style="max-width:520px;text-align:center;">This build cannot fetch external sites without a network proxy. Use the agent to research the URL or configure a browser proxy.</p>
+                    <code style="margin-top:16px;padding:8px 12px;background:#111723;border-radius:8px;display:block;">${url}</code>
+                </body></html>`;
             }
             setIframeContent(content);
             browserAutomation.setPageContent(content.replace(/<[^>]*>?/gm, ''));
         } catch (e) {
             setIframeContent(`<html><body>Error: ${e}</body></html>`);
         }
-        // Simulated network delay
-        setTimeout(() => setIsLoading(false), 800);
+        setTimeout(() => setIsLoading(false), 400);
     };
 
     useEffect(() => {
