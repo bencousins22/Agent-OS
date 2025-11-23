@@ -100,8 +100,8 @@ const SIDEBAR_KEY = 'aussie_sidebar_open';
 const VIEW_KEY = 'aussie_last_view';
 
 const clampChatWidth = (value: number, viewport: number) => {
-    const min = 240;
-    const max = Math.min(Math.max(Math.floor(viewport * 0.28), 300), 420);
+    const min = 220;
+    const max = Math.min(Math.max(Math.floor(viewport * 0.25), 280), 360);
     return Math.min(Math.max(value, min), max);
 };
 
@@ -282,7 +282,7 @@ const App: React.FC = () => {
             <div className={`flex flex-1 min-w-0 relative overflow-hidden ${isMobile ? 'pb-[70px]' : ''}`}>
                 {/* Main Content Area - Center */}
                 <div className={`flex-1 flex flex-col min-h-0 min-w-0 relative ${isMobileBrowserSplit ? 'h-[55%]' : 'h-full'}`}>
-                    <div className="w-full h-full max-w-[1400px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 overflow-auto">
+                    <div className="w-full h-full max-w-[1050px] mx-auto px-3 sm:px-4 md:px-5 lg:px-6 overflow-auto">
                         <Suspense fallback={<ComponentLoader />}>
                             <Workspace
                                 activeView={activeView}
