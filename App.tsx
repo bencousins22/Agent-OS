@@ -101,8 +101,8 @@ const SIDEBAR_KEY = 'aussie_sidebar_open';
 const VIEW_KEY = 'aussie_last_view';
 
 const clampChatWidth = (value: number, viewport: number) => {
-    const min = 160;
-    const max = Math.min(Math.max(Math.floor(viewport * 0.18), 200), 240);
+    const min = 320;
+    const max = Math.min(Math.max(Math.floor(viewport * 0.28), 380), 480);
     return Math.min(Math.max(value, min), max);
 };
 
@@ -255,16 +255,16 @@ const App: React.FC = () => {
                 />
             </Suspense>
 
-            {/* Activity Bar - Left Sidebar */}
+            {/* Activity Bar - Persistent Left Sidebar */}
             {!isMobile && (
-                <div className={`h-full transition-transform duration-300 translate-x-0`}>
+                <div className="h-full transition-all duration-200">
                     <Suspense fallback={<ComponentLoader />}>
-                        <ActivityBar 
-                            activeView={activeView} 
-                            onNavigate={handleNavigate} 
-                            onSpotlight={() => setShowSpotlight(true)} 
-                            isMobile={false} 
-                            onChatToggle={() => setChatOpen(!chatOpen)} 
+                        <ActivityBar
+                            activeView={activeView}
+                            onNavigate={handleNavigate}
+                            onSpotlight={() => setShowSpotlight(true)}
+                            isMobile={false}
+                            onChatToggle={() => setChatOpen(!chatOpen)}
                         />
                     </Suspense>
                 </div>
@@ -296,7 +296,7 @@ const App: React.FC = () => {
                             ? isMobileBrowserSplit
                                 ? 'absolute bottom-0 left-0 right-0 h-[45%] z-50 border-t border-os-border shadow-2xl bg-[#14161b] flex flex-col min-w-0'
                                 : `absolute inset-0 z-50 bg-os-bg/95 backdrop-blur-xl transition-transform duration-300 ease-out flex flex-col min-w-0 ${chatOpen ? 'translate-y-0' : 'translate-y-[110%]'}`
-                            : `relative order-first flex flex-row bg-os-bg min-w-[160px] max-w-[240px] flex-shrink-0 ${chatOpen ? 'border-r border-os-border' : 'hidden'}`}
+                            : `relative order-first flex flex-row bg-os-bg min-w-[320px] max-w-[480px] flex-shrink-0 ${chatOpen ? 'border-r border-os-border' : 'hidden'}`}
                     `}
                     style={!isMobile && chatOpen ? { width: `${chatWidth}px` } : undefined}
                 >
@@ -376,7 +376,7 @@ const App: React.FC = () => {
 
                 {/* Main Content Area - Center */}
                 <div className={`flex-1 flex flex-col min-h-0 min-w-0 relative order-last ${isMobileBrowserSplit ? 'h-[55%]' : 'h-full'}`}>
-                    <div className="w-full h-full px-2 sm:px-3 md:px-4 lg:px-5 overflow-auto">
+                    <div className="w-full h-full px-3 sm:px-4 md:px-6 lg:px-8 xl:px-10 overflow-auto">
                         <Suspense fallback={<ComponentLoader />}>
                             <Workspace
                                 activeView={activeView}
