@@ -101,8 +101,8 @@ const SIDEBAR_KEY = 'aussie_sidebar_open';
 const VIEW_KEY = 'aussie_last_view';
 
 const clampChatWidth = (value: number, viewport: number) => {
-    const min = 180;
-    const max = Math.min(Math.max(Math.floor(viewport * 0.2), 240), 300);
+    const min = 160;
+    const max = Math.min(Math.max(Math.floor(viewport * 0.18), 200), 240);
     return Math.min(Math.max(value, min), max);
 };
 
@@ -281,9 +281,81 @@ const App: React.FC = () => {
             )}
 
             <div className={`flex flex-1 min-w-0 relative overflow-hidden ${isMobile ? 'pb-[70px]' : ''}`}>
+                {/* Chat Panel - Left rail on desktop, overlay on mobile */}
+                <div
+                    className={`
+                        ${isMobile
+                            ? isMobileBrowserSplit
+                                ? 'absolute bottom-0 left-0 right-0 h-[45%] z-50 border-t border-os-border shadow-2xl bg-[#14161b] flex flex-col min-w-0'
+                                : `absolute inset-0 z-50 bg-os-bg/95 backdrop-blur-xl transition-transform duration-300 ease-out flex flex-col min-w-0 ${chatOpen ? 'translate-y-0' : 'translate-y-[110%]'}`
+                            : `relative flex flex-row bg-os-bg min-w-[160px] max-w-[280px] flex-shrink-0 ${chatOpen ? 'border-r border-os-border' : 'hidden'}`}
+                    `}
+                    style={!isMobile && chatOpen ? { width: `${chatWidth}px` } : undefined}
+                >
+                    <div className="flex-1 min-h-0 flex flex-col">
+                        <div className="h-12 border-b border-os-border flex items-center justify-between px-4 bg-os-panel shrink-0 pt-safe">
+                            <div className="flex items-center gap-3">
+                                <div className={`w-2 h-2 rounded-full ${isProcessing || isLive ? 'bg-aussie-500 animate-pulse' : 'bg-aussie-500'}`} />
+                                <span className="font-bold text-sm text-white">Aussie Agent</span>
+                                <Suspense fallback={null}>
+                                    <AgentStatus state={workflowPhase} />
+                                </Suspense>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <button onClick={toggleTts} className={`p-2 rounded-lg ${isTtsEnabled ? 'text-aussie-500' : 'text-gray-400'}`}><Headphones className="w-4 h-4" /></button>
+                                <button onClick={clearMessages} className="p-2 rounded-lg text-gray-400 hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
+                                {isMobile && <button onClick={() => setChatOpen(false)} className="p-2 text-gray-400"><ChevronDown className="w-5 h-5" /></button>}
+                            </div>
+                        </div>
+                        <div className="flex-1 min-h-0 flex flex-col">
+                            <Suspense fallback={<ComponentLoader />}>
+                                <ChatInterface messages={messages} onQuickAction={handleSendMessage} isProcessing={isProcessing} />
+                            </Suspense>
+                            {!isMobile && activeView === 'code' && (
+                                <div className="h-[200px] border-t border-os-border bg-os-bg/80">
+                                    <div className="h-9 flex items-center px-3 border-b border-os-border text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                                        Quick Terminal
+                                    </div>
+                                    <div className="h-[calc(100%-36px)] overflow-hidden">
+                                        <Suspense fallback={<ComponentLoader />}>
+                                            <TerminalView blocks={terminalBlocks} isMobile={false} />
+                                        </Suspense>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="border-t border-os-border bg-os-bg shrink-0 p-3 pb-safe">
+                            <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])} />
+                            <div className="flex items-end gap-2">
+                                <button onClick={() => fileInputRef.current?.click()} className="p-3 rounded-full bg-white/5 text-gray-400 hover:text-white"><Plus className="w-5 h-5" /></button>
+                                <div className="flex-1 bg-[#1c2128] border border-gray-700 rounded-2xl flex items-end relative min-h-[48px]">
+                                    <textarea 
+                                        value={input} onChange={(e) => { setInput(e.target.value); e.target.style.height='auto'; e.target.style.height=`${Math.min(e.target.scrollHeight,120)}px`; }}
+                                        placeholder={isLive ? "Listening..." : "Message..."}
+                                        className="w-full bg-transparent text-white text-[16px] px-4 py-3 max-h-32 outline-none resize-none" // 16px for mobile
+                                        rows={1} style={{ height: '48px' }}
+                                        onKeyDown={(e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
+                                    />
+                                    <button onClick={toggleLive} className={`absolute right-2 bottom-2 p-2 rounded-full ${isLive ? 'text-red-500 bg-red-500/10 animate-pulse' : 'text-gray-400'}`}>{isLive ? <Mic className="w-5 h-5"/> : <MicOff className="w-5 h-5"/>}</button>
+                                </div>
+                                <button onClick={() => handleSendMessage()} disabled={!input.trim() && !isLive} className={`p-3 rounded-full shrink-0 ${input.trim() ? 'bg-aussie-500 text-black' : 'bg-white/10 text-gray-500'}`}><ArrowUp className="w-5 h-5 stroke-[3]" /></button>
+                            </div>
+                        </div>
+                    </div>
+                    {!isMobile && (
+                        <Resizable 
+                            direction="horizontal" 
+                            mode="parent" 
+                            minSize={160} 
+                            maxSize={280} 
+                            onResize={(w) => setChatWidth(clampChatWidth(w, window.innerWidth))}
+                        />
+                    )}
+                </div>
+
                 {/* Main Content Area - Center */}
                 <div className={`flex-1 flex flex-col min-h-0 min-w-0 relative ${isMobileBrowserSplit ? 'h-[55%]' : 'h-full'}`}>
-                    <div className="w-full h-full max-w-[900px] mx-auto px-3 sm:px-4 md:px-5 lg:px-6 overflow-auto">
+                    <div className="w-full h-full max-w-[780px] mx-auto px-2 sm:px-3 md:px-4 lg:px-5 overflow-auto">
                         <Suspense fallback={<ComponentLoader />}>
                             <Workspace
                                 activeView={activeView}
@@ -303,81 +375,6 @@ const App: React.FC = () => {
                                 onCursorChange={setCursorLocation}
                             />
                         </Suspense>
-                    </div>
-                </div>
-
-                {/* Desktop divider for chat resize */}
-                {!isMobile && (
-                    <Suspense fallback={<ComponentLoader />}>
-                        <Resizable
-                            direction="horizontal"
-                            mode="next"
-                            reversed
-                            minSize={220}
-                            maxSize={360}
-                            onResize={(w) => setChatWidth(w)}
-                        />
-                    </Suspense>
-                )}
-
-                {/* Chat Panel - Right Sidebar */}
-                <div
-                    className={`
-                        ${isMobile
-                            ? isMobileBrowserSplit
-                                ? 'absolute bottom-0 left-0 right-0 h-[45%] z-50 border-t border-os-border shadow-2xl bg-[#14161b] flex flex-col min-w-0'
-                                : `absolute inset-0 z-50 bg-os-bg/95 backdrop-blur-xl transition-transform duration-300 ease-out flex flex-col min-w-0 ${chatOpen ? 'translate-y-0' : 'translate-y-[110%]'}`
-                            : `relative flex flex-col bg-os-bg min-w-[180px] max-w-[300px] flex-shrink-0 ${chatOpen ? 'border-l border-os-border' : 'hidden'}`}
-                    `}
-                    style={!isMobile && chatOpen ? { width: `${chatWidth}px` } : undefined}
-                >
-                    <div className="h-12 border-b border-os-border flex items-center justify-between px-4 bg-os-panel shrink-0 pt-safe">
-                        <div className="flex items-center gap-3">
-                            <div className={`w-2 h-2 rounded-full ${isProcessing || isLive ? 'bg-aussie-500 animate-pulse' : 'bg-aussie-500'}`} />
-                            <span className="font-bold text-sm text-white">Aussie Agent</span>
-                            <Suspense fallback={null}>
-                                <AgentStatus state={workflowPhase} />
-                            </Suspense>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <button onClick={toggleTts} className={`p-2 rounded-lg ${isTtsEnabled ? 'text-aussie-500' : 'text-gray-400'}`}><Headphones className="w-4 h-4" /></button>
-                            <button onClick={clearMessages} className="p-2 rounded-lg text-gray-400 hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
-                            {isMobile && <button onClick={() => setChatOpen(false)} className="p-2 text-gray-400"><ChevronDown className="w-5 h-5" /></button>}
-                        </div>
-                    </div>
-                    <div className="flex-1 min-h-0 flex flex-col">
-                        <Suspense fallback={<ComponentLoader />}>
-                            <ChatInterface messages={messages} onQuickAction={handleSendMessage} isProcessing={isProcessing} />
-                        </Suspense>
-                        {!isMobile && activeView === 'code' && (
-                            <div className="h-[200px] border-t border-os-border bg-os-bg/80">
-                                <div className="h-9 flex items-center px-3 border-b border-os-border text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                                    Quick Terminal
-                                </div>
-                                <div className="h-[calc(100%-36px)] overflow-hidden">
-                                    <Suspense fallback={<ComponentLoader />}>
-                                        <TerminalView blocks={terminalBlocks} isMobile={false} />
-                                    </Suspense>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                    <div className="border-t border-os-border bg-os-bg shrink-0 p-3 pb-safe">
-                        <input type="file" ref={fileInputRef} className="hidden" onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])} />
-                        <div className="flex items-end gap-2">
-                            <button onClick={() => fileInputRef.current?.click()} className="p-3 rounded-full bg-white/5 text-gray-400 hover:text-white"><Plus className="w-5 h-5" /></button>
-                            <div className="flex-1 bg-[#1c2128] border border-gray-700 rounded-2xl flex items-end relative min-h-[48px]">
-                                <textarea 
-                                    value={input} onChange={(e) => { setInput(e.target.value); e.target.style.height='auto'; e.target.style.height=`${Math.min(e.target.scrollHeight,120)}px`; }}
-                                    placeholder={isLive ? "Listening..." : "Message..."}
-                                    className="w-full bg-transparent text-white text-[16px] px-4 py-3 max-h-32 outline-none resize-none" // 16px for mobile
-                                    rows={1} style={{ height: '48px' }}
-                                    onKeyDown={(e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
-                                />
-                                <button onClick={toggleLive} className={`absolute right-2 bottom-2 p-2 rounded-full ${isLive ? 'text-red-500 bg-red-500/10 animate-pulse' : 'text-gray-400'}`}>{isLive ? <Mic className="w-5 h-5"/> : <MicOff className="w-5 h-5"/>}</button>
-                            </div>
-                            <button onClick={() => handleSendMessage()} disabled={!input.trim() && !isLive} className={`p-3 rounded-full shrink-0 ${input.trim() ? 'bg-aussie-500 text-black' : 'bg-white/10 text-gray-500'}`}><ArrowUp className="w-5 h-5 stroke-[3]" /></button>
-                        </div>
                     </div>
                 </div>
             </div>
