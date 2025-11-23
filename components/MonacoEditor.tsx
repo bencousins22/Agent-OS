@@ -15,9 +15,10 @@ interface Props {
     filePath: string | null;
     language: string;
     isMobile?: boolean;
+    onCursorChange?: (cursor: { line: number; column: number; path: string }) => void;
 }
 
-export const MonacoEditor: React.FC<Props> = ({ filePath, language, isMobile }) => {
+export const MonacoEditor: React.FC<Props> = ({ filePath, language, isMobile, onCursorChange }) => {
     const [content, setContent] = useState('');
     const editorRef = useRef<any>(null);
     const decorationsRef = useRef<string[]>([]);
@@ -40,6 +41,28 @@ export const MonacoEditor: React.FC<Props> = ({ filePath, language, isMobile }) 
             fs.writeFile(filePath, value);
         }
     };
+
+    // Track cursor position for status bar
+    useEffect(() => {
+        if (!editorRef.current || !filePath) return;
+        const editor = editorRef.current;
+
+        const emitPosition = () => {
+            const pos = editor.getPosition();
+            if (pos && onCursorChange) {
+                onCursorChange({ line: pos.lineNumber, column: pos.column, path: filePath });
+            }
+        };
+
+        emitPosition();
+        const disposable = editor.onDidChangeCursorPosition(({ position }: any) => {
+            if (onCursorChange && position) {
+                onCursorChange({ line: position.lineNumber, column: position.column, path: filePath });
+            }
+        });
+
+        return () => disposable?.dispose();
+    }, [filePath, onCursorChange]);
 
     // Collaborative Cursor Simulation
     useEffect(() => {

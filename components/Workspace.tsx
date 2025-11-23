@@ -32,12 +32,13 @@ interface WorkspaceProps {
     openFile: (path: string) => void;
     mobileCodeView: 'editor' | 'terminal' | 'files';
     setMobileCodeView: (view: 'editor' | 'terminal' | 'files') => void;
+    onCursorChange: (cursor: { line: number; column: number; path: string }) => void;
 }
 
 export const Workspace: React.FC<WorkspaceProps> = ({
     activeView, onNavigate, onSendMessage, setChatOpen, isMobile,
     editorTabs, activeTabPath, setActiveTabPath, activePanel, setActivePanel,
-    terminalBlocks, openFile, mobileCodeView, setMobileCodeView
+    terminalBlocks, openFile, mobileCodeView, setMobileCodeView, onCursorChange
 }) => {
     
     const renderCodeView = () => {
@@ -57,7 +58,7 @@ export const Workspace: React.FC<WorkspaceProps> = ({
                         </div>
                      </div>
                      <div className="flex-1 relative overflow-hidden">
-                        {mobileCodeView === 'editor' && <MonacoEditor filePath={activeTabPath} language={editorTabs.find(t=>t.path===activeTabPath)?.language||'plaintext'} isMobile={true} />}
+                        {mobileCodeView === 'editor' && <MonacoEditor filePath={activeTabPath} language={editorTabs.find(t=>t.path===activeTabPath)?.language||'plaintext'} isMobile={true} onCursorChange={onCursorChange} />}
                         {mobileCodeView === 'terminal' && <TerminalView blocks={terminalBlocks} isMobile={true} />}
                         {mobileCodeView === 'files' && <FileExplorer onFileClick={(path) => { openFile(path); setMobileCodeView('editor'); }} />}
                      </div>
@@ -79,7 +80,13 @@ export const Workspace: React.FC<WorkspaceProps> = ({
                             ))}
                         </div>
                     </div>
-                    <div className="flex-1 relative"><MonacoEditor filePath={activeTabPath} language={editorTabs.find(t=>t.path===activeTabPath)?.language||'plaintext'} /></div>
+                    <div className="flex-1 relative">
+                        <MonacoEditor 
+                            filePath={activeTabPath} 
+                            language={editorTabs.find(t=>t.path===activeTabPath)?.language||'plaintext'} 
+                            onCursorChange={onCursorChange}
+                        />
+                    </div>
                     <Resizable direction="vertical" mode="next" reversed={true} />
                     <div className="h-[280px] flex flex-col bg-os-bg shrink-0 border-t border-os-border">
                         <div className="h-8 flex items-center px-2 border-b border-os-border gap-4 bg-os-panel shrink-0">

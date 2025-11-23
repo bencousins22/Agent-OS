@@ -102,12 +102,17 @@ const App: React.FC = () => {
     const [showSpotlight, setShowSpotlight] = useState(false);
     const [booting, setBooting] = useState(true);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-    const [chatOpen, setChatOpen] = useState(false); 
+    const [chatOpen, setChatOpen] = useState(true);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [mobileCodeView, setMobileCodeView] = useState<'editor' | 'terminal' | 'files'>('editor');
     const [isNavPending, startNavTransition] = useTransition();
     const [showSidebar, setShowSidebar] = useState(true);
+    const [cursorLocation, setCursorLocation] = useState<{ line: number; column: number; path: string | null }>({
+        line: 1,
+        column: 1,
+        path: null
+    });
 
     const { messages, isProcessing, workflowPhase, terminalBlocks, editorTabs, activeTabPath, setActiveTabPath, openFile, mediaFile, setMediaFile, processUserMessage, isLive, isTtsEnabled, toggleLive, toggleTts, clearMessages, handleFileUpload } = useAgent();
 
@@ -159,6 +164,12 @@ const App: React.FC = () => {
         if (isMobile && messages.length > 0 && messages[messages.length - 1].role === 'model') setChatOpen(true);
     }, [messages.length, isMobile]);
 
+    useEffect(() => {
+        if (activeTabPath) {
+            setCursorLocation(prev => ({ ...prev, path: activeTabPath }));
+        }
+    }, [activeTabPath]);
+
     if (booting) return <BootLoader />;
 
     const isMobileBrowserSplit = isMobile && activeView === 'browser' && chatOpen;
@@ -190,7 +201,7 @@ const App: React.FC = () => {
 
             {/* Activity Bar - Left Sidebar */}
             {!isMobile && (
-                <div className={`h-full transition-transform duration-300 ${showSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
+                <div className={`h-full transition-transform duration-300 translate-x-0`}>
                     <Suspense fallback={<ComponentLoader />}>
                         <ActivityBar 
                             activeView={activeView} 
@@ -203,16 +214,7 @@ const App: React.FC = () => {
                 </div>
             )}
 
-            {/* Sidebar toggle button for desktop */}
-            {!isMobile && (
-                <button 
-                    onClick={() => setShowSidebar(!showSidebar)} 
-                    className="absolute top-3 left-3 z-[65] p-2 rounded-full bg-[#0f1216]/80 border border-white/10 text-gray-300 hover:text-white hover:border-aussie-500/50 transition-colors"
-                    aria-label="Toggle sidebar"
-                >
-                    <ChevronDown className={`w-4 h-4 transition-transform ${showSidebar ? '-rotate-90' : 'rotate-90'}`} />
-                </button>
-            )}
+            {/* Sidebar toggle button removed for persistent sidebar */}
 
             {/* Mobile Bottom Nav */}
             {isMobile && (
@@ -249,6 +251,7 @@ const App: React.FC = () => {
                             openFile={openFile}
                             mobileCodeView={mobileCodeView}
                             setMobileCodeView={setMobileCodeView}
+                            onCursorChange={setCursorLocation}
                         />
                     </Suspense>
                 </div>
@@ -259,7 +262,7 @@ const App: React.FC = () => {
                         ? isMobileBrowserSplit
                             ? 'absolute bottom-0 left-0 right-0 h-[45%] z-50 border-t border-os-border shadow-2xl bg-[#14161b] flex flex-col'
                             : `absolute inset-0 z-50 bg-os-bg/95 backdrop-blur-xl transition-transform duration-300 ease-out flex flex-col ${chatOpen ? 'translate-y-0' : 'translate-y-[110%]'}`
-                        : `relative flex flex-col bg-os-bg ${chatOpen ? 'w-[360px] border-l border-os-border' : 'hidden'}`}
+                        : `relative flex flex-col bg-os-bg w-[360px] border-l border-os-border`}
                 `}>
                     <div className="h-12 border-b border-os-border flex items-center justify-between px-4 bg-os-panel shrink-0 pt-safe">
                         <div className="flex items-center gap-3">
@@ -310,7 +313,10 @@ const App: React.FC = () => {
             )}
             {!isMobile && (
                 <Suspense fallback={null}>
-                    <StatusBar activeTab={editorTabs.find(t => t.path === activeTabPath)} />
+                    <StatusBar 
+                        activeTab={editorTabs.find(t => t.path === activeTabPath)} 
+                        cursor={cursorLocation}
+                    />
                 </Suspense>
             )}
         </div>
