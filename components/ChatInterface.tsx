@@ -62,9 +62,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, onQuickA
     };
 
     return (
-        <div className="flex-1 flex flex-col min-h-0 bg-os-bg relative group/chat">
+        <div className="flex-1 flex flex-col min-h-0 bg-[#0d1117] relative group/chat">
             {/* Session Header */}
-            <div className="h-12 md:h-14 border-b border-os-border bg-[#121620]/90 backdrop-blur-md flex items-center justify-between px-4 md:px-5 shrink-0 z-20 select-none sticky top-0 shadow-sm">
+            <div className="h-12 md:h-14 border-b border-white/10 bg-[#161b22]/95 backdrop-blur-md flex items-center justify-between px-4 md:px-5 shrink-0 z-20 select-none sticky top-0 shadow-lg">
                 <div className="relative">
                     <button
                         onClick={() => setShowSessions(!showSessions)}
@@ -109,7 +109,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, onQuickA
             <div
                 ref={scrollRef}
                 onScroll={handleScroll}
-                className="flex-1 overflow-y-auto p-4 md:p-5 lg:p-6 space-y-6 md:space-y-8 custom-scrollbar relative bg-gradient-to-b from-[#0f131a] via-[#0c1117] to-[#0a0f15] scroll-smooth"
+                className="flex-1 overflow-y-auto p-4 md:p-5 lg:p-6 space-y-6 md:space-y-8 custom-scrollbar relative bg-gradient-to-b from-[#0d1117] via-[#0d1117] to-[#0a0e14] scroll-smooth"
                 aria-live="polite"
             >
                 {messages.length === 0 ? (
@@ -155,8 +155,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, onQuickA
                                     <div className={`
                                         max-w-[95%] md:max-w-[90%] lg:max-w-[85%] rounded-2xl px-4 md:px-5 py-3 md:py-4 text-sm md:text-base leading-relaxed shadow-md border relative transition-all
                                         ${isUser
-                                            ? 'bg-gradient-to-br from-aussie-500 to-aussie-600 text-[#0f1216] border-aussie-400 rounded-tr-md font-medium shadow-[0_4px_20px_-5px_rgba(0,229,153,0.4)]'
-                                            : 'bg-[#1c2128] border-white/5 text-gray-200 rounded-tl-md shadow-lg hover:border-white/10 hover:shadow-xl'}
+                                            ? 'bg-gradient-to-br from-aussie-500 to-aussie-600 text-black border-aussie-400 rounded-tr-md font-medium shadow-[0_4px_20px_-5px_rgba(0,229,153,0.5)]'
+                                            : 'bg-[#1f2937] border-white/10 text-gray-100 rounded-tl-md shadow-lg hover:border-white/20 hover:shadow-xl'}
                                     `}>
                                          <div className={`prose max-w-none prose-p:my-1.5 prose-pre:my-3 prose-pre:rounded-xl text-[14px] md:text-[15px] ${isUser ? 'prose-p:text-[#0f1216] prose-strong:text-black prose-a:text-black prose-code:text-black/70' : 'prose-invert prose-pre:bg-[#0a0c10] prose-code:text-aussie-400 prose-a:text-aussie-400'}`}>
                                             <ReactMarkdown>{msg.text}</ReactMarkdown>
@@ -213,13 +213,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, onQuickA
 };
 
 const QuickAction = ({ label, onClick, icon: Icon }: any) => (
-    <button onClick={onClick} className="w-full flex items-center justify-between px-5 md:px-6 py-3.5 md:py-4 bg-[#1c2128] hover:bg-[#22272e] border border-white/5 hover:border-aussie-500/30 rounded-xl md:rounded-2xl transition-all group shadow-md hover:shadow-xl hover:-translate-y-1 active:translate-y-0 active:scale-[0.98]">
+    <button onClick={onClick} className="w-full flex items-center justify-between px-5 md:px-6 py-4 md:py-5 bg-[#1f2937] hover:bg-[#374151] border border-white/10 hover:border-aussie-500/40 rounded-xl md:rounded-2xl transition-all group shadow-lg hover:shadow-2xl hover:shadow-aussie-500/10 hover:-translate-y-1.5 active:translate-y-0 active:scale-[0.98]">
         <div className="flex items-center gap-4">
-            <div className="p-2 md:p-2.5 rounded-xl bg-[#0f1216] group-hover:bg-aussie-500/20 group-hover:text-aussie-500 transition-all text-gray-400 border border-white/5 group-hover:border-aussie-500/30 shadow-sm">
-                <Icon className="w-4 h-4 md:w-5 md:h-5" />
+            <div className="p-2.5 md:p-3 rounded-xl bg-aussie-500/15 group-hover:bg-aussie-500/25 text-aussie-400 border border-aussie-500/30 group-hover:border-aussie-500/50 shadow-sm group-hover:shadow-aussie-500/20 transition-all">
+                <Icon className="w-5 h-5 md:w-6 md:h-6" />
             </div>
-            <span className="text-sm md:text-base text-gray-300 font-semibold group-hover:text-white transition-colors">{label}</span>
+            <span className="text-sm md:text-base text-gray-200 font-bold group-hover:text-white transition-colors">{label}</span>
         </div>
-        <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-gray-600 group-hover:text-aussie-500 group-hover:translate-x-2 transition-all" />
+        <ArrowRight className="w-5 h-5 md:w-6 md:h-6 text-gray-500 group-hover:text-aussie-400 group-hover:translate-x-2 transition-all" />
     </button>
 );

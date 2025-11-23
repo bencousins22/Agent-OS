@@ -420,19 +420,19 @@ export const Dashboard: React.FC<Props> = memo(({ onNavigate, activeView }) => {
                     </div>
 
                     {/* App Grid */}
-                    <div className="grid grid-cols-[repeat(auto-fit,minmax(11rem,1fr))] sm:grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] lg:grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] xl:grid-cols-[repeat(auto-fit,minmax(15rem,1fr))] gap-4 md:gap-5">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-6">
                         {[...NAV_ITEMS].map(item => (
                             <button
                                 key={item.view}
                                 onClick={() => onNavigate(item.view as MainView)}
-                                className={`group w-full text-left rounded-2xl border border-white/10 bg-[#0e111a]/90 backdrop-blur-2xl p-5 md:p-6 flex flex-col items-start gap-3 hover:border-aussie-500/40 hover:bg-aussie-500/5 transition-all shadow-xl shadow-black/40 hover:shadow-2xl hover:-translate-y-1 active:scale-[0.98] ${activeView === item.view ? 'ring-2 ring-aussie-500/40 border-aussie-500/20' : ''}`}
+                                className={`group w-full text-left rounded-2xl border bg-[#1a1f2e]/95 backdrop-blur-2xl p-6 md:p-7 flex flex-col items-start gap-4 hover:border-aussie-500/50 hover:bg-[#1e2433] transition-all shadow-xl shadow-black/40 hover:shadow-2xl hover:shadow-aussie-500/10 hover:-translate-y-2 active:scale-[0.98] ${activeView === item.view ? 'ring-2 ring-aussie-500/60 border-aussie-500/40 bg-[#1e2433]' : 'border-white/15'}`}
                             >
-                                <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center text-aussie-500 group-hover:border-aussie-500/30 group-hover:from-aussie-500/20 group-hover:to-aussie-500/5 transition-all shadow-lg">
-                                    <item.icon className="w-6 h-6 md:w-7 md:h-7" />
+                                <div className="w-16 h-16 md:w-18 md:h-18 rounded-2xl bg-gradient-to-br from-aussie-500/20 to-aussie-600/10 border border-aussie-500/30 flex items-center justify-center text-aussie-400 group-hover:border-aussie-500/50 group-hover:from-aussie-500/30 group-hover:to-aussie-600/20 group-hover:shadow-lg group-hover:shadow-aussie-500/20 transition-all">
+                                    <item.icon className="w-8 h-8 md:w-9 md:h-9 stroke-[2]" />
                                 </div>
                                 <div className="flex-1 min-w-0 w-full">
-                                    <div className="text-sm md:text-base font-bold text-white truncate mb-1">{item.tooltip}</div>
-                                    <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider">Launch App</div>
+                                    <div className="text-base md:text-lg font-bold text-white truncate mb-1.5">{item.tooltip}</div>
+                                    <div className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Launch App</div>
                                 </div>
                             </button>
                         ))}

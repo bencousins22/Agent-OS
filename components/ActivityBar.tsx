@@ -90,11 +90,11 @@ const ActivityButton = ({ icon: Icon, active, onClick, tooltip }: any) => (
             className={`
                 p-3 xl:p-4 rounded-xl xl:rounded-2xl transition-all duration-200 relative
                 ${active
-                    ? 'text-aussie-500 bg-gradient-to-br from-aussie-500/15 to-aussie-500/5 shadow-lg border border-aussie-500/20'
-                    : 'text-os-textDim hover:text-white hover:bg-white/10 border border-transparent hover:border-white/10 hover:shadow-md active:scale-95'}
+                    ? 'text-aussie-400 bg-gradient-to-br from-aussie-500/20 to-aussie-500/10 shadow-lg border border-aussie-500/30'
+                    : 'text-gray-400 hover:text-white hover:bg-white/15 border border-transparent hover:border-white/15 hover:shadow-md active:scale-95'}
             `}
         >
-            <Icon className={`w-6 h-6 xl:w-7 xl:h-7 ${active ? 'stroke-[2.5]' : 'stroke-[1.5]'}`} />
+            <Icon className={`w-6 h-6 xl:w-7 xl:h-7 ${active ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
         </button>
 
         {/* Tooltip */}
