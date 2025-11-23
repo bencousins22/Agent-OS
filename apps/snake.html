@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Snake</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: 'Courier New', Courier, monospace;
+      text-align: center;
+    }
+    #game-board {
+      background-color: #000;
+      border: 2px solid #eee;
+      margin: 20px auto;
+      display: block;
+    }
+    #score {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    #game-over {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 40px;
+      border: 2px solid #eee;
+      border-radius: 10px;
+    }
+    #game-over h2 {
+      margin: 0 0 20px;
+    }
+    #game-over button {
+      background-color: #111;
+      color: #eee;
+      border: 2px solid #eee;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-family: 'Courier New', Courier, monospace;
+    }
+  </style>
+</head>
+<body>
+  <h1>Snake</h1>
+  <div id="score">Score: 0</div>
+  <canvas id="game-board" width="400" height="400"></canvas>
+  <div id="game-over">
+    <h2>Game Over</h2>
+    <button onclick="location.reload()">Play Again</button>
+  </div>
+
+  <script>
+    const gameBoard = document.getElementById('game-board');
+    const context = gameBoard.getContext('2d');
+    const scoreElement = document.getElementById('score');
+    const gameOverScreen = document.getElementById('game-over');
+
+    const gridSize = 20;
+    let snake = [{ x: 10, y: 10 }];
+    let food = {};
+    let direction = 'right';
+    let score = 0;
+    let gameOver = false;
+
+    function generateFood() {
+      food = {
+        x: Math.floor(Math.random() * (gameBoard.width / gridSize)),
+        y: Math.floor(Math.random() * (gameBoard.height / gridSize))
+      };
+    }
+
+    function draw() {
+      context.clearRect(0, 0, gameBoard.width, gameBoard.height);
+
+      for (let i = 0; i < snake.length; i++) {
+        context.fillStyle = i === 0 ? '#0f0' : '#0a0';
+        context.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize, gridSize);
+      }
+
+      context.fillStyle = '#f00';
+      context.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+    }
+
+    function update() {
+      if (gameOver) return;
+
+      const head = { x: snake[0].x, y: snake[0].y };
+
+      switch (direction) {
+        case 'up':
+          head.y--;
+          break;
+        case 'down':
+          head.y++;
+          break;
+        case 'left':
+          head.x--;
+          break;
+        case 'right':
+          head.x++;
+          break;
+      }
+
+      if (
+        head.x < 0 || head.x >= gameBoard.width / gridSize ||
+        head.y < 0 || head.y >= gameBoard.height / gridSize ||
+        checkCollision(head)
+      ) {
+        gameOver = true;
+        gameOverScreen.style.display = 'block';
+        return;
+      }
+
+      snake.unshift(head);
+
+      if (head.x === food.x && head.y === food.y) {
+        score++;
+        scoreElement.textContent = 'Score: ' + score;
+        generateFood();
+      } else {
+        snake.pop();
+      }
+
+      draw();
+    }
+
+    function checkCollision(head) {
+      for (let i = 1; i < snake.length; i++) {
+        if (head.x === snake[i].x && head.y === snake[i].y) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    document.addEventListener('keydown', e => {
+      switch (e.key) {
+        case 'ArrowUp':
+          if (direction !== 'down') direction = 'up';
+          break;
+        case 'ArrowDown':
+          if (direction !== 'up') direction = 'down';
+          break;
+        case 'ArrowLeft':
+          if (direction !== 'right') direction = 'left';
+          break;
+        case 'ArrowRight':
+          if (direction !== 'left') direction = 'right';
+          break;
+      }
+    });
+
+    generateFood();
+    setInterval(update, 100);
+  </script>
+</body>
+</html>
