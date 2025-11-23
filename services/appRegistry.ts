@@ -1,10 +1,11 @@
 
 import { AppDefinition, BotAppConfig } from '../types';
-import { Trophy, Activity, Users, Zap, Box, Layers } from 'lucide-react';
+import { Trophy, Activity, Users, Zap, Box, Layers, Gamepad2 } from 'lucide-react';
 import { bus } from './eventBus';
 import { BotAppTemplate } from '../components/apps/BotAppTemplate';
 import { BotDashboard } from '../components/apps/BotDashboard';
 import { HyperliquidApp } from '../components/apps/HyperliquidApp';
+import SnakeApp from '../components/SnakeApp';
 
 const REGISTRY_STORAGE_KEY = 'aussie_os_app_registry_v1';
 
@@ -41,6 +42,18 @@ class AppRegistryService {
                 icon: Layers,
                 price: '$0.00',
                 component: BotDashboard
+            },
+            {
+                id: 'snake-game',
+                name: 'Snake Game',
+                description: 'The classic snake game.',
+                category: 'utility',
+                version: '1.0.0',
+                author: 'Jules',
+                installed: true,
+                icon: Gamepad2,
+                price: '$0.00',
+                component: SnakeApp
             },
             { 
                 id: 'nba-bot', 
