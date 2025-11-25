@@ -13,6 +13,7 @@ import { deployment } from './deployment';
 import { browserAutomation } from './browserAutomation';
 import { getJulesApiKey } from './julesKeys';
 import { notify } from './notification';
+import { pingJulesApi } from './julesApi';
 
 const uuid = () => Math.random().toString(36).substring(2, 15);
 
@@ -30,6 +31,7 @@ class JulesAgent {
     private retryTimer: ReturnType<typeof setTimeout> | null = null;
     private retryAttempts = 0;
     private readonly MAX_RATE_LIMIT_RETRIES = 3;
+    private julesApiConnected = false;
 
     private static instance: JulesAgent;
 
@@ -87,6 +89,18 @@ class JulesAgent {
              return;
         }
 
+        if (!this.julesApiConnected) {
+            try {
+                await pingJulesApi();
+                this.julesApiConnected = true;
+                notify.success('Jules API', 'Connected to Jules API endpoint.');
+            } catch (err: any) {
+                this.addMessage('system', `Jules API unreachable: ${err.message}`);
+                notify.error('Jules API', err.message || 'Unable to reach Jules API');
+                return;
+            }
+        }
+
         if (!this.ai) {
             this.initAI();
         }
@@ -107,8 +121,8 @@ class JulesAgent {
                 if (!this.ai) this.initAI();
                 
                 if (this.ai) {
-                    const apiKey = getJulesApiKey();
-                    this.chatSession = this.ai.chats.create({
+            const apiKey = getJulesApiKey();
+            this.chatSession = this.ai.chats.create({
                         model: 'gemini-2.5-pro',
                         config: { 
                             systemInstruction: AUSSIE_SYSTEM_INSTRUCTION, 

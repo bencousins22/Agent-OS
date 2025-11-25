@@ -29,7 +29,7 @@ export const KernelShield: React.FC<Props> = ({ className = '' }) => {
     const badgeColor = perms.sandboxed ? 'text-amber-400' : 'text-green-400';
 
     return (
-        <div className={`pointer-events-auto ${className}`}>
+        <div className={`pointer-events-auto ${className} relative`}>
             <button 
                 onClick={() => setOpen(o => !o)} 
                 className="flex items-center gap-2 px-3 py-2 rounded-full bg-[#111827] border border-white/10 text-xs font-bold text-gray-200 shadow-lg shadow-black/20 hover:border-aussie-500/50 transition-colors"
@@ -40,7 +40,7 @@ export const KernelShield: React.FC<Props> = ({ className = '' }) => {
             </button>
 
             {open && (
-                <div className="mt-2 w-64 bg-[#0f1216] border border-white/10 rounded-xl shadow-2xl p-3 space-y-3 text-xs text-gray-200">
+                <div className="absolute right-0 top-full mt-2 w-64 bg-[#0f1216] border border-white/10 rounded-xl shadow-2xl p-3 space-y-3 text-xs text-gray-200 z-50">
                     <div className="flex items-center justify-between">
                         <span className="font-bold">File System</span>
                         <div className="flex gap-1">
