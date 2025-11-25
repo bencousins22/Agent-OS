@@ -1,7 +1,7 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, memo, useTransition, useOptimistic, useMemo } from 'react';
 import { Message, ChatSession } from '../types';
-import { Bot, Sparkles, ArrowRight, Zap, History, Save, ChevronDown, Trash2, MoreHorizontal, User, Copy, Check, ArrowDown } from 'lucide-react';
+import { Bot, Sparkles, ArrowRight, Zap, History, Save, ChevronDown, Copy, Check, ArrowDown, RefreshCw, Trash2, MessageSquare } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 interface ChatInterfaceProps {
@@ -10,16 +10,68 @@ interface ChatInterfaceProps {
     isProcessing: boolean;
 }
 
-export const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, onQuickAction, isProcessing }) => {
+export const ChatInterface: React.FC<ChatInterfaceProps> = memo(({ messages, onQuickAction, isProcessing }) => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const [sessions, setSessions] = useState<ChatSession[]>([
-        { id: 'default', title: 'Current Session', messages: [], lastModified: Date.now() }
-    ]);
+    const [sessions, setSessions] = useState<ChatSession[]>(() => {
+        try {
+            const saved = localStorage.getItem('aussie_chat_sessions');
+            return saved ? JSON.parse(saved) : [{ id: 'default', title: 'Current Session', messages: [], lastModified: Date.now() }];
+        } catch {
+            return [{ id: 'default', title: 'Current Session', messages: [], lastModified: Date.now() }];
+        }
+    });
     const [currentSessionId, setCurrentSessionId] = useState('default');
     const [showSessions, setShowSessions] = useState(false);
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const [showScrollButton, setShowScrollButton] = useState(false);
+    const [isPending, startTransition] = useTransition();
+
+    // Optimistic message rendering
+    const [optimisticMessages, addOptimisticMessage] = useOptimistic(
+        messages,
+        (state: Message[], newMessage: Message) => [...state, newMessage]
+    ) as [Message[], (msg: Message) => void];
+
+    // Persist sessions to localStorage
+    useEffect(() => {
+        try {
+            localStorage.setItem('aussie_chat_sessions', JSON.stringify(sessions));
+        } catch {}
+    }, [sessions]);
+
+    // Grouped messages for better visual organization
+    const groupedMessages = useMemo(() => {
+        const groups: { role: string; messages: Message[]; timestamp: number }[] = [];
+        let currentGroup: Message[] = [];
+        let currentRole: string | null = null;
+
+        optimisticMessages.forEach(msg => {
+            if (msg.role !== currentRole) {
+                if (currentGroup.length > 0) {
+                    groups.push({
+                        role: currentRole!,
+                        messages: currentGroup,
+                        timestamp: currentGroup[0].timestamp
+                    });
+                }
+                currentGroup = [msg];
+                currentRole = msg.role;
+            } else {
+                currentGroup.push(msg);
+            }
+        });
+
+        if (currentGroup.length > 0) {
+            groups.push({
+                role: currentRole!,
+                messages: currentGroup,
+                timestamp: currentGroup[0].timestamp
+            });
+        }
+
+        return groups;
+    }, [optimisticMessages]);
 
     // Smart Scroll Logic
     const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
@@ -27,7 +79,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, onQuickA
     };
 
     useEffect(() => {
-        // Auto-scroll on new messages if at bottom or if it's a user message
         const container = scrollRef.current;
         if (!container) return;
 
@@ -48,11 +99,23 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, onQuickA
     };
 
     const saveSession = () => {
-        const newId = Math.random().toString(36).substr(2, 9);
-        const title = `Session ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-        setSessions(prev => [...prev, { id: newId, title, messages: [...messages], lastModified: Date.now() }]);
-        setCurrentSessionId(newId);
-        setShowSessions(false);
+        startTransition(() => {
+            const newId = Math.random().toString(36).substr(2, 9);
+            const title = `Session ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            setSessions(prev => [...prev, { id: newId, title, messages: [...messages], lastModified: Date.now() }]);
+            setCurrentSessionId(newId);
+            setShowSessions(false);
+        });
+    };
+
+    const deleteSession = (sessionId: string) => {
+        if (sessionId === 'default') return;
+        startTransition(() => {
+            setSessions(prev => prev.filter(s => s.id !== sessionId));
+            if (sessionId === currentSessionId) {
+                setCurrentSessionId('default');
+            }
+        });
     };
 
     const copyToClipboard = (text: string, id: string) => {
@@ -61,166 +124,313 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, onQuickA
         setTimeout(() => setCopiedId(null), 2000);
     };
 
+    const currentSession = sessions.find(s => s.id === currentSessionId);
+
     return (
-        <div className="flex-1 flex flex-col min-h-0 bg-[#0d1117] relative group/chat">
-            {/* Session Header */}
-            <div className="h-12 sm:h-12 md:h-14 border-b border-white/10 bg-[#161b22]/95 backdrop-blur-md flex items-center justify-between px-3 sm:px-4 md:px-5 shrink-0 z-20 select-none sticky top-0 shadow-lg">
-                <div className="relative">
-                    <button
-                        onClick={() => setShowSessions(!showSessions)}
-                        className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5 text-[11px] sm:text-xs md:text-sm text-gray-400 hover:text-white transition-all font-semibold py-1.5 sm:py-1.5 md:py-2 px-2 sm:px-2.5 md:px-3 rounded-lg hover:bg-white/10 border border-transparent hover:border-white/10 active:scale-95"
-                    >
-                        <History className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5" />
-                        <span className="max-w-[100px] sm:max-w-[140px] md:max-w-[180px] truncate font-mono">{sessions.find(s => s.id === currentSessionId)?.title || 'Current Session'}</span>
-                        <ChevronDown className={`w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-70 transition-transform duration-200 ${showSessions ? 'rotate-180' : ''}`} />
-                    </button>
+        <div className="flex-1 flex flex-col min-h-0 px-3 sm:px-4 lg:px-6 w-full">
+            <div className="relative flex-1 flex flex-col min-h-0 h-full bg-gradient-to-br from-[#0a0e14] via-[#0d1117] to-[#0a0e14] rounded-2xl overflow-hidden border border-white/5 shadow-2xl max-w-6xl w-full mx-auto">
+                {/* Enhanced Session Header */}
+                <div className="h-14 border-b border-white/10 bg-[#0d1117]/95 backdrop-blur-xl flex items-center justify-between px-4 md:px-5 shrink-0 z-20 select-none shadow-lg">
+                    <div className="relative flex items-center gap-3">
+                        {/* Session Selector */}
+                        <button
+                            onClick={() => setShowSessions(!showSessions)}
+                            className="flex items-center gap-2.5 text-xs font-semibold text-gray-300 hover:text-white transition-all py-2 px-3 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 group"
+                        >
+                            <History className="w-4 h-4 text-aussie-400 group-hover:text-aussie-300" />
+                            <span className="max-w-[140px] md:max-w-[200px] truncate font-mono">
+                                {currentSession?.title || 'Current Session'}
+                            </span>
+                            <ChevronDown className={`w-3.5 h-3.5 text-gray-500 transition-transform duration-200 ${showSessions ? 'rotate-180' : ''}`} />
+                        </button>
 
-                    {showSessions && (
-                        <div className="absolute top-full left-0 mt-2 w-60 bg-[#1c2128] border border-os-border rounded-xl shadow-2xl z-50 py-1 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
-                            <div className="px-3 py-2 text-[10px] font-bold text-gray-500 uppercase tracking-wider border-b border-white/5">History</div>
-                            <div className="max-h-60 overflow-y-auto custom-scrollbar">
-                                {sessions.map(s => (
-                                    <button 
-                                        key={s.id}
-                                        onClick={() => { setCurrentSessionId(s.id); setShowSessions(false); }}
-                                        className={`w-full text-left px-4 py-3 text-xs hover:bg-white/5 border-l-2 transition-all ${s.id === currentSessionId ? 'text-aussie-500 border-aussie-500 bg-aussie-500/5' : 'text-gray-400 border-transparent'}`}
-                                    >
-                                        <div className="font-medium truncate">{s.title}</div>
-                                        <div className="text-[10px] opacity-50 mt-0.5">{new Date(s.lastModified).toLocaleDateString()} • {s.messages.length} msgs</div>
-                                    </button>
-                                ))}
-                            </div>
-                            <div className="border-t border-white/5 p-2 bg-[#161b22]">
-                                <button onClick={saveSession} className="w-full flex items-center justify-center gap-2 text-xs text-aussie-500 hover:bg-aussie-500/10 p-2 rounded-lg transition-colors font-bold">
-                                    <Save className="w-3 h-3" /> Save Chat
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2 bg-aussie-500/10 px-2 sm:px-2.5 md:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl border border-aussie-500/20 text-[9px] sm:text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-aussie-500 shadow-sm">
-                    <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5" />
-                    <span className="hidden sm:inline">Gemini 2.5 Pro</span>
-                    <span className="sm:hidden">Gemini</span>
-                    {isProcessing && <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-aussie-500 animate-pulse shadow-glow" />}
-                </div>
-            </div>
-
-            {/* Messages Area */}
-            <div
-                ref={scrollRef}
-                onScroll={handleScroll}
-                className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5 lg:p-6 space-y-4 sm:space-y-5 md:space-y-6 lg:space-y-8 custom-scrollbar relative bg-gradient-to-b from-[#0d1117] via-[#0d1117] to-[#0a0e14] scroll-smooth"
-                aria-live="polite"
-            >
-                {messages.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-center pb-8 sm:pb-10 px-3 sm:px-4 animate-in fade-in zoom-in-95 duration-500">
-                        <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 bg-gradient-to-br from-aussie-500/20 to-blue-500/20 rounded-2xl sm:rounded-[2rem] mb-6 sm:mb-8 border border-white/10 flex items-center justify-center ring-1 ring-white/5 shadow-[0_0_50px_-10px_rgba(0,229,153,0.3)] relative group cursor-default">
-                            <div className="absolute inset-0 bg-aussie-500/10 blur-3xl rounded-full group-hover:bg-aussie-500/20 transition-colors duration-1000"></div>
-                            <Bot className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 text-aussie-500 relative z-10 drop-shadow-lg" />
-                        </div>
-                        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 sm:mb-3 tracking-tight">Aussie Agent</h2>
-                        <p className="text-xs sm:text-sm md:text-base text-os-textDim mb-6 sm:mb-8 md:mb-10 max-w-[280px] sm:max-w-[320px] md:max-w-[380px] leading-relaxed">
-                            Enterprise-grade AI for system control, development, and analysis.
-                        </p>
-                        <div className="grid grid-cols-1 gap-2.5 sm:gap-3 w-full max-w-md">
-                             <QuickAction onClick={() => onQuickAction?.("Create a new NBA Bot app")} label="Build NBA Bot" icon={Zap} />
-                             <QuickAction onClick={() => onQuickAction?.("Generate a futuristic city video")} label="Generate Video" icon={Sparkles} />
-                             <QuickAction onClick={() => onQuickAction?.("Explain the project structure")} label="Analyze Code" icon={Bot} />
-                        </div>
-                    </div>
-                ) : (
-                    <>
-                        {messages.map((msg, index) => {
-                            const isUser = msg.role === 'user';
-                            const showAvatar = index === 0 || messages[index - 1].role !== msg.role;
-                            
-                            return (
-                                <div key={msg.id} className={`flex flex-col gap-1 ${isUser ? 'items-end' : 'items-start'} w-full animate-in fade-in slide-in-from-bottom-2 duration-300 group`}>
-                                    {showAvatar && (
-                                        <div className={`flex items-center gap-2 ${isUser ? 'flex-row-reverse' : ''} mb-1 px-1 select-none`}>
-                                            {isUser ? (
-                                                <div className="w-5 h-5 rounded-md bg-gray-700 flex items-center justify-center text-[10px] font-bold text-white shadow-sm">U</div>
-                                            ) : (
-                                                <div className="w-5 h-5 rounded-md bg-gradient-to-br from-aussie-500 to-emerald-600 flex items-center justify-center text-black text-[10px] font-bold shadow-lg shadow-aussie-500/20">A</div>
-                                            )}
-                                            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                                                {isUser ? 'You' : (msg.sender || 'Jules')}
-                                            </span>
-                                            <span className="text-[9px] text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                {new Date(msg.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
-                                            </span>
-                                        </div>
-                                    )}
-
-                                    <div className={`
-                                        max-w-[95%] sm:max-w-[92%] md:max-w-[90%] lg:max-w-[85%] rounded-xl sm:rounded-2xl px-3 sm:px-4 md:px-5 py-2.5 sm:py-3 md:py-4 text-sm md:text-base leading-relaxed shadow-md border relative transition-all
-                                        ${isUser
-                                            ? 'bg-gradient-to-br from-aussie-500 to-aussie-600 text-black border-aussie-400 rounded-tr-md font-medium shadow-[0_4px_20px_-5px_rgba(0,229,153,0.5)]'
-                                            : 'bg-[#1f2937] border-white/10 text-gray-100 rounded-tl-md shadow-lg hover:border-white/20 hover:shadow-xl'}
-                                    `}>
-                                         <div className={`prose max-w-none prose-p:my-1 sm:prose-p:my-1.5 prose-pre:my-2 sm:prose-pre:my-3 prose-pre:rounded-lg sm:prose-pre:rounded-xl text-[13px] sm:text-[14px] md:text-[15px] ${isUser ? 'prose-p:text-[#0f1216] prose-strong:text-black prose-a:text-black prose-code:text-black/70' : 'prose-invert prose-pre:bg-[#0a0c10] prose-code:text-aussie-400 prose-a:text-aussie-400'}`}>
-                                            <ReactMarkdown>{msg.text}</ReactMarkdown>
-                                        </div>
-                                        
-                                        {!isUser && (
-                                            <div className="absolute -bottom-6 left-0 flex opacity-0 group-hover:opacity-100 transition-opacity gap-1">
-                                                <button 
-                                                    onClick={() => copyToClipboard(msg.text, msg.id)}
-                                                    className="p-1.5 text-gray-500 hover:text-white rounded hover:bg-white/10 transition-colors"
-                                                    title="Copy"
+                        {/* Session Dropdown */}
+                        {showSessions && (
+                            <div className="absolute top-full left-0 mt-2 w-72 bg-[#161b22] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                                <div className="p-3 border-b border-white/5 flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <MessageSquare className="w-4 h-4 text-aussie-400" />
+                                        <span className="text-xs font-bold text-white uppercase tracking-wider">Chat History</span>
+                                    </div>
+                                    <span className="text-xs text-gray-500">{sessions.length} sessions</span>
+                                </div>
+                                <div className="max-h-80 overflow-y-auto custom-scrollbar">
+                                    {sessions.map(s => (
+                                        <div
+                                            key={s.id}
+                                            className={`group flex items-center justify-between px-4 py-3 hover:bg-white/5 border-l-2 transition-all ${
+                                                s.id === currentSessionId
+                                                    ? 'text-aussie-300 border-aussie-500 bg-aussie-500/5'
+                                                    : 'text-gray-400 border-transparent'
+                                            }`}
+                                        >
+                                            <button
+                                                onClick={() => { setCurrentSessionId(s.id); setShowSessions(false); }}
+                                                className="flex-1 text-left"
+                                            >
+                                                <div className="text-sm font-semibold truncate">{s.title}</div>
+                                                <div className="text-[10px] text-gray-600 mt-0.5">
+                                                    {new Date(s.lastModified).toLocaleDateString()} • {s.messages.length} messages
+                                                </div>
+                                            </button>
+                                            {s.id !== 'default' && (
+                                                <button
+                                                    onClick={() => deleteSession(s.id)}
+                                                    className="p-1.5 rounded-lg hover:bg-red-500/10 text-gray-600 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                                                    title="Delete session"
                                                 >
-                                                    {copiedId === msg.id ? <Check className="w-3 h-3 text-green-500"/> : <Copy className="w-3 h-3"/>}
+                                                    <Trash2 className="w-3.5 h-3.5" />
                                                 </button>
-                                            </div>
-                                        )}
-                                    </div>
+                                            )}
+                                        </div>
+                                    ))}
                                 </div>
-                            );
-                        })}
-                        
-                        {isProcessing && (
-                            <div className="flex flex-col items-start gap-1 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                <div className="flex items-center gap-2 mb-1 px-1">
-                                    <div className="w-5 h-5 rounded-md bg-gradient-to-br from-aussie-500 to-emerald-600 flex items-center justify-center text-black text-[10px] font-bold shadow-lg">A</div>
-                                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Jules</span>
-                                </div>
-                                <div className="bg-[#1c2128] border border-white/5 rounded-2xl rounded-tl-sm px-4 py-3 shadow-md flex items-center gap-2">
-                                    <div className="flex gap-1">
-                                        <div className="w-1.5 h-1.5 bg-aussie-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                                        <div className="w-1.5 h-1.5 bg-aussie-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                                        <div className="w-1.5 h-1.5 bg-aussie-500 rounded-full animate-bounce"></div>
-                                    </div>
-                                    <span className="text-xs text-gray-500 font-medium ml-2 animate-pulse">Thinking...</span>
+                                <div className="border-t border-white/5 p-2 bg-[#0d1117]">
+                                    <button
+                                        onClick={saveSession}
+                                        disabled={isPending}
+                                        className="w-full flex items-center justify-center gap-2 text-xs text-aussie-400 hover:bg-aussie-500/10 p-2.5 rounded-xl transition-all font-bold border border-aussie-500/20 hover:border-aussie-500/40 disabled:opacity-50"
+                                    >
+                                        <Save className="w-3.5 h-3.5" />
+                                        {isPending ? 'Saving...' : 'Save Current Chat'}
+                                    </button>
                                 </div>
                             </div>
                         )}
-                    </>
-                )}
-                <div ref={messagesEndRef} className="h-2" />
-            </div>
+                    </div>
 
-            {/* Scroll to bottom button */}
-            {showScrollButton && (
-                <button 
-                    onClick={() => scrollToBottom()}
-                    className="absolute bottom-4 right-4 p-2 bg-aussie-500 text-black rounded-full shadow-lg shadow-aussie-500/20 hover:scale-110 transition-transform z-30 animate-in fade-in zoom-in"
+                    {/* Model Badge */}
+                    <div className="flex items-center gap-2 bg-gradient-to-r from-aussie-500/15 to-emerald-500/10 px-3 py-1.5 rounded-xl border border-aussie-500/30 shadow-lg shadow-aussie-500/10">
+                        <Sparkles className="w-3.5 h-3.5 text-aussie-400" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-aussie-300">
+                            <span className="hidden sm:inline">Gemini 2.5 Pro</span>
+                            <span className="sm:hidden">Gemini</span>
+                        </span>
+                        {isProcessing && (
+                            <span className="w-2 h-2 rounded-full bg-aussie-400 animate-pulse shadow-glow" />
+                        )}
+                    </div>
+                </div>
+
+                {/* Messages Area */}
+                <div
+                    ref={scrollRef}
+                    onScroll={handleScroll}
+                    className="flex-1 min-h-0 overflow-y-auto p-4 md:p-6 pb-12 md:pb-16 space-y-6 custom-scrollbar bg-gradient-to-b from-[#0a0e14] via-[#0d1117] to-[#0a0e14] scroll-smooth max-w-5xl w-full mx-auto"
+                    aria-live="polite"
                 >
-                    <ArrowDown className="w-4 h-4" strokeWidth={3} />
-                </button>
-            )}
+                    {messages.length === 0 ? (
+                        <EmptyState onQuickAction={onQuickAction} />
+                    ) : (
+                        <>
+                            {groupedMessages.map((group, groupIndex) => (
+                                <MessageGroup
+                                    key={`${group.role}-${groupIndex}`}
+                                    group={group}
+                                    onCopy={copyToClipboard}
+                                    copiedId={copiedId}
+                                />
+                            ))}
+
+                            {isProcessing && (
+                                <div className="flex flex-col items-start gap-2 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                                    <div className="flex items-center gap-2.5 px-1">
+                                        <div className="w-6 h-6 rounded-xl bg-gradient-to-br from-aussie-500 to-emerald-500 flex items-center justify-center text-black font-bold text-xs shadow-lg shadow-aussie-500/30">
+                                            A
+                                        </div>
+                                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Jules</span>
+                                    </div>
+                                    <div className="bg-gradient-to-br from-[#1f2937] to-[#1a2332] border border-white/10 rounded-2xl rounded-tl-sm px-5 py-3.5 shadow-xl flex items-center gap-3">
+                                        <div className="flex gap-1.5">
+                                            <div className="w-2 h-2 bg-aussie-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                                            <div className="w-2 h-2 bg-aussie-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                                            <div className="w-2 h-2 bg-aussie-400 rounded-full animate-bounce"></div>
+                                        </div>
+                                        <span className="text-sm text-gray-400 font-medium animate-pulse">Thinking...</span>
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    )}
+                    <div ref={messagesEndRef} className="h-6" />
+                </div>
+
+                {/* Scroll to bottom button */}
+                {showScrollButton && (
+                    <button
+                        onClick={() => scrollToBottom()}
+                        className="absolute bottom-6 right-6 p-3 bg-gradient-to-r from-aussie-500 to-emerald-400 text-black rounded-full shadow-xl shadow-aussie-500/40 hover:shadow-2xl hover:shadow-aussie-500/50 hover:scale-110 transition-all z-30 animate-in fade-in zoom-in duration-200 active:scale-95"
+                        title="Scroll to bottom"
+                    >
+                        <ArrowDown className="w-5 h-5" strokeWidth={2.5} />
+                    </button>
+                )}
+            </div>
         </div>
     );
-};
+});
 
-const QuickAction = ({ label, onClick, icon: Icon }: any) => (
-    <button onClick={onClick} className="w-full flex items-center justify-between px-4 sm:px-5 md:px-6 py-3.5 sm:py-4 md:py-5 bg-[#1f2937] hover:bg-[#374151] border border-white/10 hover:border-aussie-500/40 rounded-xl md:rounded-2xl transition-all group shadow-lg hover:shadow-2xl hover:shadow-aussie-500/10 hover:-translate-y-1 sm:hover:-translate-y-1.5 active:translate-y-0 active:scale-[0.98]">
-        <div className="flex items-center gap-3 sm:gap-3.5 md:gap-4">
-            <div className="p-2 sm:p-2.5 md:p-3 rounded-lg sm:rounded-xl bg-aussie-500/15 group-hover:bg-aussie-500/25 text-aussie-400 border border-aussie-500/30 group-hover:border-aussie-500/50 shadow-sm group-hover:shadow-aussie-500/20 transition-all">
-                <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+// Message Group Component
+const MessageGroup = memo<{
+    group: { role: string; messages: Message[]; timestamp: number };
+    onCopy: (text: string, id: string) => void;
+    copiedId: string | null;
+}>(({ group, onCopy, copiedId }) => {
+    const isUser = group.role === 'user';
+    const firstMessage = group.messages[0];
+
+    return (
+        <div className={`flex flex-col gap-3 ${isUser ? 'items-end' : 'items-start'} w-full animate-in fade-in slide-in-from-bottom-4 duration-300 group/group`}>
+            {/* Avatar & Name */}
+            <div className={`flex items-center gap-2.5 ${isUser ? 'flex-row-reverse' : ''} px-1`}>
+                {isUser ? (
+                    <div className="w-6 h-6 rounded-xl bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center text-xs font-bold text-white shadow-lg">
+                        U
+                    </div>
+                ) : (
+                    <div className="w-6 h-6 rounded-xl bg-gradient-to-br from-aussie-500 to-emerald-500 flex items-center justify-center text-black font-bold text-xs shadow-lg shadow-aussie-500/30">
+                        A
+                    </div>
+                )}
+                <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                    {isUser ? 'You' : (firstMessage.sender || 'Jules')}
+                </span>
+                <span className="text-[10px] text-gray-600 opacity-0 group-hover/group:opacity-100 transition-opacity">
+                    {new Date(firstMessage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
             </div>
-            <span className="text-xs sm:text-sm md:text-base text-gray-200 font-bold group-hover:text-white transition-colors">{label}</span>
+
+            {/* Messages in group */}
+            <div className={`flex flex-col gap-2 w-full ${isUser ? 'items-end' : 'items-start'}`}>
+                {group.messages.map((msg) => (
+                    <MessageBubble
+                        key={msg.id}
+                        message={msg}
+                        isUser={isUser}
+                        onCopy={onCopy}
+                        copiedId={copiedId}
+                    />
+                ))}
+            </div>
         </div>
-        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-500 group-hover:text-aussie-400 group-hover:translate-x-1 sm:group-hover:translate-x-2 transition-all" />
+    );
+});
+
+// Message Bubble Component
+const MessageBubble = memo<{
+    message: Message;
+    isUser: boolean;
+    onCopy: (text: string, id: string) => void;
+    copiedId: string | null;
+}>(({ message, isUser, onCopy, copiedId }) => (
+    <div className="relative group/message w-full sm:w-auto max-w-[760px]">
+        <div
+            className={`
+                rounded-2xl px-5 py-4 text-sm leading-relaxed border transition-all
+                ${isUser
+                    ? 'bg-gradient-to-br from-aussie-500 to-emerald-500 text-black border-aussie-400/50 rounded-tr-md font-medium shadow-xl shadow-aussie-500/30 hover:shadow-2xl hover:shadow-aussie-500/40'
+                    : 'bg-gradient-to-br from-[#1f2937] to-[#1a2332] backdrop-blur border-white/15 text-gray-100 rounded-tl-md shadow-lg hover:shadow-xl hover:border-white/25'}
+            `}
+        >
+            <div
+                className={`prose max-w-none prose-p:my-1.5 prose-pre:my-3 prose-pre:rounded-xl prose-pre:border prose-pre:border-white/10 text-[14px] md:text-[15px] ${
+                    isUser
+                        ? 'prose-p:text-black/90 prose-strong:text-black prose-a:text-black/80 prose-code:text-black/80 prose-code:bg-black/15 prose-code:rounded-md prose-code:px-2 prose-code:py-1'
+                        : 'prose-invert prose-pre:bg-[#0a0c10] prose-code:text-aussie-300 prose-code:bg-aussie-500/15 prose-code:rounded-md prose-code:px-2 prose-code:py-1 prose-a:text-aussie-400 hover:prose-a:text-aussie-300 prose-strong:text-white'
+                }`}
+            >
+                <ReactMarkdown>{message.text}</ReactMarkdown>
+            </div>
+        </div>
+
+        {/* Action Buttons */}
+        {!isUser && (
+            <div className="absolute -bottom-10 left-0 flex gap-2 opacity-0 group-hover/message:opacity-100 transition-all">
+                <button
+                    onClick={() => onCopy(message.text, message.id)}
+                    className="p-2 text-gray-500 hover:text-aussie-400 rounded-lg hover:bg-white/10 transition-all active:scale-95 border border-transparent hover:border-white/10"
+                    title="Copy message"
+                >
+                    {copiedId === message.id ? (
+                        <Check className="w-4 h-4 text-emerald-400" />
+                    ) : (
+                        <Copy className="w-4 h-4" />
+                    )}
+                </button>
+                <button
+                    onClick={() => {}}
+                    className="p-2 text-gray-500 hover:text-aussie-400 rounded-lg hover:bg-white/10 transition-all active:scale-95 border border-transparent hover:border-white/10"
+                    title="Regenerate response"
+                >
+                    <RefreshCw className="w-4 h-4" />
+                </button>
+            </div>
+        )}
+    </div>
+));
+
+// Empty State Component
+const EmptyState = memo<{ onQuickAction?: (text: string) => void }>(({ onQuickAction }) => (
+    <div className="flex flex-col items-center justify-center h-full text-center pb-10 px-4 animate-in fade-in zoom-in-95 duration-500">
+        {/* Logo */}
+        <div className="relative mb-8 group cursor-default">
+            <div className="absolute inset-0 bg-gradient-to-r from-aussie-500/30 to-emerald-400/20 blur-3xl rounded-full animate-pulse" />
+            <div className="relative w-28 h-28 bg-gradient-to-br from-aussie-500/20 to-aussie-500/10 rounded-3xl border border-aussie-500/30 flex items-center justify-center shadow-2xl shadow-aussie-500/20 ring-1 ring-white/5 group-hover:scale-105 transition-transform duration-500">
+                <Bot className="w-14 h-14 text-aussie-400 drop-shadow-lg" strokeWidth={1.5} />
+            </div>
+        </div>
+
+        {/* Title */}
+        <h2 className="text-3xl md:text-4xl font-black text-white mb-3 tracking-tight bg-gradient-to-r from-white via-aussie-100 to-white bg-clip-text">
+            Aussie Agent
+        </h2>
+        <p className="text-sm md:text-base text-gray-500 mb-10 max-w-md leading-relaxed">
+            Enterprise-grade AI for system control, development automation, and intelligent analysis
+        </p>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 gap-3 w-full max-w-md">
+            <QuickAction
+                onClick={() => onQuickAction?.("Create a new NBA Bot app")}
+                label="Build NBA Bot"
+                icon={Zap}
+                color="from-yellow-500/20 to-orange-400/10"
+            />
+            <QuickAction
+                onClick={() => onQuickAction?.("Generate a futuristic city video")}
+                label="Generate Video"
+                icon={Sparkles}
+                color="from-aussie-500/20 to-emerald-400/10"
+            />
+            <QuickAction
+                onClick={() => onQuickAction?.("Explain the project structure")}
+                label="Analyze Code"
+                icon={Bot}
+                color="from-blue-500/20 to-cyan-400/10"
+            />
+        </div>
+    </div>
+));
+
+// Quick Action Component
+const QuickAction = memo<{
+    label: string;
+    onClick: () => void;
+    icon: any;
+    color: string;
+}>(({ label, onClick, icon: Icon, color }) => (
+    <button
+        onClick={onClick}
+        className={`w-full p-5 flex items-center justify-between group bg-gradient-to-br ${color} hover:scale-[1.02] border border-white/10 hover:border-aussie-500/30 rounded-2xl transition-all active:scale-[0.98] shadow-lg hover:shadow-2xl hover:shadow-aussie-500/10 backdrop-blur`}
+    >
+        <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-white/5 group-hover:bg-white/10 text-aussie-400 border border-aussie-500/20 group-hover:border-aussie-500/40 shadow-sm transition-all group-hover:scale-110">
+                <Icon className="w-6 h-6" />
+            </div>
+            <span className="text-base text-gray-200 font-bold group-hover:text-white transition-colors text-left">
+                {label}
+            </span>
+        </div>
+        <ArrowRight className="w-5 h-5 text-gray-500 group-hover:text-aussie-400 group-hover:translate-x-2 transition-all shrink-0" />
     </button>
-);
+));

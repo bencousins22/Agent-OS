@@ -47,7 +47,7 @@ export const WindowManager: React.FC = () => {
                     <WindowFrame key={win.id} window={win} isMobile={isMobile} maximizedOverride={effectiveMaximized}>
                         {Component ? (
                             // Pass botConfig if it exists, or standard props
-                            <Component {...(appDef?.botConfig ? { config: appDef.botConfig } : win.props)} />
+                            <Component {...win.props} />
                         ) : (
                             <div className="p-4 text-red-500 bg-[#0f1216] h-full">
                                 <h3 className="font-bold">Application Error</h3>
@@ -63,17 +63,13 @@ export const WindowManager: React.FC = () => {
 };
 
 const WindowFrame: React.FC<{ window: OSWindow, children: React.ReactNode, isMobile: boolean, maximizedOverride: boolean }> = ({ window: win, children, isMobile, maximizedOverride }) => {
-    const [isDragging, setIsDragging] = useState(false);
-    
-    const handleMouseDown = (e: React.MouseEvent) => {
+    const handleMouseDown = () => {
         wm.focusWindow(win.id);
     };
 
     const handleDragStart = (e: React.MouseEvent) => {
         if (maximizedOverride) return;
         e.preventDefault();
-        setIsDragging(true);
-        
         const startX = e.clientX - win.x;
         const startY = e.clientY - win.y;
 
@@ -82,7 +78,6 @@ const WindowFrame: React.FC<{ window: OSWindow, children: React.ReactNode, isMob
         };
 
         const onMouseUp = () => {
-            setIsDragging(false);
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
         };

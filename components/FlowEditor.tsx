@@ -1,9 +1,9 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FlowGraph, FlowNode, FlowEdge } from '../types';
-import { Play, Plus, Save, Zap, Terminal, CheckCircle, AlertCircle, Github, Video, Menu, X } from 'lucide-react';
+import { Play, Save, Zap, Terminal, CheckCircle, AlertCircle, Github, Video, Menu, X } from 'lucide-react';
 import { fs } from '../services/fileSystem';
-import { JulesOrchestrator } from '../services/jules';
+import { JulesOrchestrator } from '../services/julesOrchestrator';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 

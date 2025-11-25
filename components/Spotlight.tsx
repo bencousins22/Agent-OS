@@ -10,6 +10,77 @@ interface Props {
     onNavigate: (view: any) => void;
 }
 
+// Simple safe arithmetic evaluator (supports + - * / and parentheses)
+function safeEvaluate(expr: string): number | null {
+    // Tokenize
+    const tokens: string[] = [];
+    let numBuf = '';
+    for (let i = 0; i < expr.length; i++) {
+        const ch = expr[i];
+        if ((ch >= '0' && ch <= '9') || ch === '.') {
+            numBuf += ch;
+        } else if (ch === ' ' || ch === '\t') {
+            if (numBuf) { tokens.push(numBuf); numBuf = ''; }
+            continue;
+        } else if ('+-*/()'.includes(ch)) {
+            if (numBuf) { tokens.push(numBuf); numBuf = ''; }
+            tokens.push(ch);
+        } else {
+            return null; // invalid character
+        }
+    }
+    if (numBuf) tokens.push(numBuf);
+
+    // Shunting-yard to RPN
+    const output: string[] = [];
+    const ops: string[] = [];
+    const prec: Record<string, number> = { '+': 1, '-': 1, '*': 2, '/': 2 };
+
+    for (const t of tokens) {
+        if (!isNaN(Number(t))) {
+            output.push(t);
+        } else if ('+-*/'.includes(t)) {
+            while (ops.length > 0 && ops[ops.length - 1] !== '(' && prec[ops[ops.length - 1]] >= prec[t]) {
+                output.push(ops.pop() as string);
+            }
+            ops.push(t);
+        } else if (t === '(') {
+            ops.push(t);
+        } else if (t === ')') {
+            while (ops.length > 0 && ops[ops.length - 1] !== '(') {
+                output.push(ops.pop() as string);
+            }
+            if (ops.length === 0) return null; // mismatched
+            ops.pop(); // remove '('
+        }
+    }
+    while (ops.length > 0) {
+        const op = ops.pop() as string;
+        if (op === '(' || op === ')') return null;
+        output.push(op);
+    }
+
+    // Evaluate RPN
+    const stack: number[] = [];
+    for (const t of output) {
+        if (!isNaN(Number(t))) {
+            stack.push(Number(t));
+        } else if ('+-*/'.includes(t)) {
+            if (stack.length < 2) return null;
+            const b = stack.pop() as number;
+            const a = stack.pop() as number;
+            switch (t) {
+                case '+': stack.push(a + b); break;
+                case '-': stack.push(a - b); break;
+                case '*': stack.push(a * b); break;
+                case '/': stack.push(b === 0 ? NaN : a / b); break;
+            }
+        } else return null;
+    }
+    if (stack.length !== 1) return null;
+    return stack[0];
+}
+
 export const Spotlight: React.FC<Props> = ({ isOpen, onClose, onNavigate }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<any[]>([]);
@@ -33,23 +104,18 @@ export const Spotlight: React.FC<Props> = ({ isOpen, onClose, onNavigate }) => {
         const searchResults = [];
 
         // 1. Math Calculation
-        try {
-            // Simple regex to detect math
+            // Detect math-like input and evaluate safely
             if (/^[\d\s+\-*/().]+$/.test(query) && /\d/.test(query)) {
-                // eslint-disable-next-line no-eval
-                const result = eval(query); 
-                if (!isNaN(result)) {
-                    searchResults.push({ 
-                        type: 'math', 
-                        label: `= ${result}`, 
+                const result = safeEvaluate(query);
+                if (result !== null && !isNaN(result)) {
+                    searchResults.push({
+                        type: 'math',
+                        label: `= ${result}`,
                         sub: 'Calculation',
-                        action: () => { navigator.clipboard.writeText(String(result)); } 
+                        action: () => { navigator.clipboard.writeText(String(result)); }
                     });
                 }
-            }
-        } catch(e) {}
-
-        // 2. Weather
+            }        // 2. Weather
         if ('weather'.includes(query.toLowerCase())) {
             searchResults.push({
                 type: 'weather',

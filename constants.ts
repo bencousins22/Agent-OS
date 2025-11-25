@@ -1,5 +1,6 @@
 
 import { FunctionDeclaration, Type } from "@google/genai";
+import { Home, Code2, Globe, Github, Calendar, Rocket, ShoppingBag, Briefcase, Zap, Server } from 'lucide-react';
 
 export const AUSSIE_SYSTEM_INSTRUCTION = `
 You are **Jules**, the intelligent autonomous kernel developer of **Aussie OS**.
@@ -17,7 +18,6 @@ You exist in a split-view environment:
 </environment>
 
 <capabilities>
-- **App Creation**: You can create entire functional Bot Apps using \`create_bot_app\`.
 - **FileSystem**: Read/Write/List files in the virtual file system.
 - **Shell**: Execute commands (\`git\`, \`apm\`, \`npm\`, \`node\`).
 - **Browser**: Navigate the web and interact with pages.
@@ -25,12 +25,10 @@ You exist in a split-view environment:
 </capabilities>
 
 <instructions>
-1. **Proactive**: If a user asks for an app (e.g., "Make a Cricket Bot"), use \`create_bot_app\` immediately.
-2. **Transparent**: Use \`message_notify_user\` to keep the user updated on long running tasks.
-3. **Self-Correction**: If a tool fails, analyze the error and try a different approach or fix parameters.
-4. **Code**: When asked to write code, use \`file_write\` to save it to disk, then \`switch_view\` to 'code' so the user can see it.
+1. **Transparent**: Use \`message_notify_user\` to keep the user updated on long running tasks.
+2. **Self-Correction**: If a tool fails, analyze the error and try a different approach or fix parameters.
+3. **Code**: When asked to write code, use \`file_write\` to save it to disk, then \`switch_view\` to 'code' so the user can see it.
 </instructions>
-
 <tools>
 Use the provided tools to manipulate the environment.
 Always prefer using a tool over just talking about it.
@@ -61,20 +59,7 @@ export const TOOLS: FunctionDeclaration[] = [
         required: ["view"]
     }
   },
-  {
-    name: "create_bot_app",
-    description: "Create and register a new Bot Application in the OS Registry.",
-    parameters: {
-        type: Type.OBJECT,
-        properties: {
-            name: { type: Type.STRING, description: "App Name (e.g. 'Cricket Pro')" },
-            description: { type: Type.STRING, description: "App Description" },
-            sport: { type: Type.STRING, description: "Sport category key (e.g. 'cricket')" },
-            themeColor: { type: Type.STRING, description: "Tailwind BG color class (e.g. 'bg-green-600')" }
-        },
-        required: ["name", "description", "sport"]
-    }
-  },
+
   {
     name: "file_read",
     description: "Read file content.",
@@ -127,15 +112,7 @@ export const TOOLS: FunctionDeclaration[] = [
         required: ["repoUrl"]
     }
   },
-  {
-    name: "apm_install",
-    description: "Install a package.",
-    parameters: {
-        type: Type.OBJECT,
-        properties: { package: { type: Type.STRING } },
-        required: ["package"]
-    }
-  },
+
   {
     name: "github_ops",
     description: "Perform GitHub operations.",
@@ -209,3 +186,17 @@ export const TOOLS: FunctionDeclaration[] = [
     parameters: { type: Type.OBJECT, properties: {} }
   }
 ];
+
+export const NAV_ITEMS = [
+    { view: 'dashboard', icon: Home, tooltip: 'Command Center', shortcut: true, group: 'Primary' },
+    { view: 'agentos', icon: Server, tooltip: 'Agent-OS', shortcut: true, group: 'Primary' },
+    { view: 'projects', icon: Briefcase, tooltip: 'Projects', shortcut: true, group: 'Primary' },
+    { view: 'marketplace', icon: ShoppingBag, tooltip: 'Marketplace', shortcut: true, group: 'Primary' },
+    { view: 'code', icon: Code2, tooltip: 'Code', shortcut: true, group: 'Development' },
+    { view: 'linux', icon: Server, tooltip: 'WASM Linux', shortcut: false, group: 'Development' },
+    { view: 'browser', icon: Globe, tooltip: 'Browser', shortcut: true, group: 'Primary' },
+    { view: 'flow', icon: Zap, tooltip: 'Flow', shortcut: false, group: 'Development' },
+    { view: 'github', icon: Github, tooltip: 'GitHub', shortcut: false, group: 'Development' },
+    { view: 'scheduler', icon: Calendar, tooltip: 'Scheduler', shortcut: false, group: 'Tools' },
+    { view: 'deploy', icon: Rocket, tooltip: 'Deploy', shortcut: false, group: 'Tools' },
+] as const;

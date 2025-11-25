@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Rocket, Github, Play, ExternalLink, Cloud, Zap, Box, CheckCircle } from 'lucide-react';
+import { Rocket, Github, Play, ExternalLink, Cloud, Zap, Box } from 'lucide-react';
 import { deployment } from '../services/deployment';
 import { DeployState, DeployStatus, DeploymentProvider } from '../types';
 import { notify } from '../services/notification';

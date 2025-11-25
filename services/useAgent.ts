@@ -6,7 +6,6 @@ import { bus } from './eventBus';
 import { fs } from './fileSystem';
 import { shell } from './shell';
 import { audioUtils } from './audio';
-import { toolRegistry } from './toolRegistry';
 import { GoogleGenAI, Modality } from '@google/genai';
 
 const uuid = () => Math.random().toString(36).substring(2, 15);
@@ -116,6 +115,7 @@ export const useAgent = () => {
         const res = await shell.execute(cmd);
         if (res.stdout) addBlock('output', res.stdout);
         if (res.stderr) addBlock('error', res.stderr);
+        return res;
     };
 
     const toggleLive = () => setIsLive(!isLive);

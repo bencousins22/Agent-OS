@@ -1,5 +1,5 @@
 
-import { DeployState, DeployStatus, DeployLog } from '../types';
+import { DeployState, DeployStatus } from '../types';
 import { config } from './config';
 
 /**

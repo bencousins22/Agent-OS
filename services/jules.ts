@@ -7,12 +7,10 @@ import { github } from './github';
 import { orchestrator } from './orchestrator';
 import { bus } from './eventBus';
 import { AUSSIE_SYSTEM_INSTRUCTION, TOOLS } from '../constants';
-import { appRegistry } from './appRegistry';
 import { scheduler } from './scheduler';
 import { deployment } from './deployment';
-import { apm } from './packageManager';
+
 import { browserAutomation } from './browserAutomation';
-import { wm } from './windowManager';
 
 const uuid = () => Math.random().toString(36).substring(2, 15);
 
@@ -195,24 +193,7 @@ class JulesAgent {
                     bus.emit('switch-view', { view: args.view });
                     return { status: "success" };
 
-                case 'create_bot_app':
-                    const app = appRegistry.createBotApp(args);
-                    
-                    // Create Desktop Shortcut - Use app-window: protocol to ensure it opens as window
-                    const shortcutPath = `/home/aussie/Desktop/${app.name}.lnk`;
-                    fs.writeFile(shortcutPath, `app-window:${app.id}`);
 
-                    // Open Window Immediately (Desktop OS behavior)
-                    wm.openWindow(app.id, app.name);
-                    
-                    // Switch to Dashboard to see it
-                    bus.emit('switch-view', { view: 'dashboard' });
-
-                    return { 
-                        status: "created", 
-                        appId: app.id, 
-                        message: `App "${app.name}" created, installed to Desktop, and launched.` 
-                    };
 
                 case 'deploy_app':
                     const deployId = await deployment.deploy(args.provider || 'render', args.repoUrl);
@@ -229,8 +210,7 @@ class JulesAgent {
                 case 'shell_exec':
                     return await shell.execute(args.command);
 
-                case 'apm_install':
-                    return { status: "installed", message: await apm.install(args.package) };
+
 
                 case 'github_ops':
                     return await github.processOperation(args.operation, args.data);
@@ -283,56 +263,3 @@ export const julesAgent = JulesAgent.getInstance();
 /**
  * JulesOrchestrator: Flow Graph Execution
  */
-export class JulesOrchestrator {
-    private graph: any;
-    private updateNodeCallback: any;
-    private logCallback: any;
-
-    constructor(graph: any, onUpdateNode: any, onLog: any) {
-        this.graph = graph;
-        this.updateNodeCallback = onUpdateNode;
-        this.logCallback = onLog;
-    }
-    
-    public async run() {
-        if (!process.env.API_KEY) {
-            this.logCallback("Error: No API Key");
-            return;
-        }
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        const chat = ai.chats.create({
-            model: 'gemini-3-pro-preview',
-            config: { systemInstruction: AUSSIE_SYSTEM_INSTRUCTION, tools: [{ functionDeclarations: TOOLS }] }
-        });
-        
-        this.logCallback("Starting Flow...");
-        const startNode = this.graph.nodes.find((n: any) => n.type === 'trigger');
-        if(startNode) await this.traverse(startNode, "Flow Start", chat);
-    }
-
-    private async traverse(node: any, context: string, chat: Chat) {
-        this.updateNodeCallback(node.id, { status: 'running' });
-        try {
-            let result = "";
-            if(node.type !== 'trigger') {
-                const prompt = `Context: ${context}. Task: ${node.prompt}. Execute this using available tools.`;
-                const response = await chat.sendMessage({ message: prompt });
-                const parts = response.candidates?.[0]?.content?.parts || [];
-                const text = parts.filter((p:any)=>p.text).map((p:any)=>p.text).join('');
-                result = text || "Executed.";
-            }
-            this.updateNodeCallback(node.id, { status: 'success', result });
-            this.logCallback(`Node ${node.label} complete.`);
-            
-            const edges = this.graph.edges.filter((e: any) => e.source === node.id);
-            for(const edge of edges) {
-                const next = this.graph.nodes.find((n: any) => n.id === edge.target);
-                if(next) await this.traverse(next, result, chat);
-            }
-
-        } catch(e: any) {
-            this.updateNodeCallback(node.id, { status: 'error', result: e.message });
-            this.logCallback(`Error in ${node.label}: ${e.message}`);
-        }
-    }
-}

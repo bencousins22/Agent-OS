@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { fs } from '../services/fileSystem';
 import { FileStat } from '../types';
-import { ChevronRight, ChevronDown, File, Folder, FolderOpen, RefreshCw, Plus, Trash2, FilePlus, FolderPlus, MoreVertical, Download, Edit } from 'lucide-react';
+import { ChevronRight, ChevronDown, File, Folder, FolderOpen, RefreshCw, Plus, Trash2, FilePlus, FolderPlus, MoreVertical, Edit } from 'lucide-react';
 import { bus } from '../services/eventBus';
 
 interface Props {
@@ -19,7 +19,7 @@ interface ContextMenuState {
 const EXPANDED_KEY = 'aussie_os_expanded_folders';
 
 export const FileExplorer: React.FC<Props> = ({ onFileClick }) => {
-    const [items, setItems] = useState<FileStat[]>([]);
+    const [, forceRefresh] = useState(0);
     const [expandedFolders, setExpandedFolders] = useState<Set<string>>(() => {
         try {
             const saved = localStorage.getItem(EXPANDED_KEY);
@@ -50,7 +50,7 @@ export const FileExplorer: React.FC<Props> = ({ onFileClick }) => {
     };
 
     const refresh = () => {
-        setItems(fetchFiles('/workspace'));
+        forceRefresh(v => v + 1);
     };
 
     useEffect(() => {

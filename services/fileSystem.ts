@@ -77,7 +77,8 @@ class FileSystemService {
             const parsed = JSON.parse(raw);
             return this.deserializeNode(parsed);
         } catch (e) {
-            console.error("Failed to load FS:", e);
+            // Note: logger import would create circular dependency, use console here
+            if (typeof window !== 'undefined') console.error("Failed to load FS:", e);
             return null;
         }
     }
@@ -87,7 +88,8 @@ class FileSystemService {
             const serialized = this.serializeNode(this.root);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));
         } catch (e) {
-            console.error("Failed to save FS:", e);
+            // Note: logger import would create circular dependency, use console here
+            if (typeof window !== 'undefined') console.error("Failed to save FS:", e);
         }
     }
 
@@ -257,7 +259,7 @@ class FileSystemService {
             // For this simplified drag/drop demo, we'll assume files or empty dirs, or handle deeper copy later.
             // Re-implementing deep copy logic:
             if (node.children) {
-                node.children.forEach((child, name) => {
+                node.children.forEach((_, name) => {
                     this.move(`${oldPath}/${name}`, `${newPath}/${name}`);
                 });
             }
@@ -285,7 +287,7 @@ class FileSystemService {
                         throw err;
                     }
                 },
-                writeFile: async (path: string, data: any, opts: any) => {
+                writeFile: async (path: string, data: any, _opts: any) => {
                     let content = '';
                     if (typeof data === 'string') content = data;
                     else content = decoder.decode(data);

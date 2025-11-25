@@ -11,7 +11,7 @@ import { GoogleGenAI } from '@google/genai';
 
 export class GoogleAIOrchestrator {
     
-    public async generateMedia(service: string, prompt: string, paramsStr: string): Promise<any> {
+    public async generateMedia(service: string, prompt: string, _paramsStr: string): Promise<any> {
         bus.emit('shell-output', `[Orchestrator] 🎨 Requesting ${service.toUpperCase()} generation...`);
         bus.emit('agent-message', { agent: 'Media Studio', text: `🎨 Generating ${service} content: "${prompt}"...` });
 

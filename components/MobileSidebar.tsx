@@ -1,37 +1,24 @@
 
 import React from 'react';
-import { X, Settings, User, ChevronRight, LogOut, Shield, LayoutGrid } from 'lucide-react';
+import { X, User, ChevronRight, LogOut, Shield } from 'lucide-react';
 import { MainView } from '../types';
+import { NAV_ITEMS } from '../constants';
 
 interface Props {
     isOpen: boolean;
     onClose: () => void;
     activeView: MainView;
     onNavigate: (view: MainView) => void;
-    menuItems: ReadonlyArray<{ view: MainView; icon: any; tooltip: string }>;
 }
 
-export const MobileSidebar: React.FC<Props> = ({ isOpen, onClose, activeView, onNavigate, menuItems }) => {
-    // Define navigation groups for better organization
-    const groups = {
-        'Apps': ['dashboard', 'marketplace', 'projects', 'browser'],
-        'Development': ['code', 'flow', 'github', 'deploy', 'scheduler'],
-        'System': ['settings']
-    };
-
-    // Helper to find icon for a view
-    const getIcon = (view: MainView) => {
-        const item = menuItems.find(i => i.view === view);
-        if (item) return item.icon;
-        if (view === 'settings') return Settings;
-        return LayoutGrid;
-    };
-
-    const getLabel = (view: MainView) => {
-        const item = menuItems.find(i => i.view === view);
-        if (item) return item.tooltip;
-        return view.charAt(0).toUpperCase() + view.slice(1);
-    };
+export const MobileSidebar: React.FC<Props> = ({ isOpen, onClose, activeView, onNavigate }) => {
+    const groupedNavItems = NAV_ITEMS.reduce((acc, item) => {
+        if (!acc[item.group]) {
+            acc[item.group] = [];
+        }
+        acc[item.group]!.push(item);
+        return acc;
+    }, {} as Record<string, (typeof NAV_ITEMS)[number][]>);
 
     return (
         <>
@@ -77,22 +64,21 @@ export const MobileSidebar: React.FC<Props> = ({ isOpen, onClose, activeView, on
 
                 {/* Navigation Groups */}
                 <div className="flex-1 overflow-y-auto px-3 py-4 custom-scrollbar space-y-6 pb-safe">
-                    {Object.entries(groups).map(([groupName, views]) => (
+                    {Object.entries(groupedNavItems).map(([groupName, items]) => (
                         <div key={groupName}>
                             <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
                                 {groupName}
                                 <div className="h-px bg-gray-800 flex-1" />
                             </div>
                             <div className="space-y-1">
-                                {views.map(view => {
-                                    const viewKey = view as MainView;
-                                    const Icon = getIcon(viewKey);
-                                    const isActive = activeView === viewKey;
+                                {items.map(item => {
+                                    const Icon = item.icon;
+                                    const isActive = activeView === item.view;
                                     
                                     return (
                                         <button
-                                            key={view}
-                                            onClick={() => { onNavigate(viewKey); onClose(); }}
+                                            key={item.view}
+                                            onClick={() => { onNavigate(item.view); onClose(); }}
                                             className={`
                                                 w-full flex items-center gap-3.5 px-4 py-4 rounded-xl transition-all duration-200 active:scale-[0.98]
                                                 ${isActive
@@ -102,7 +88,7 @@ export const MobileSidebar: React.FC<Props> = ({ isOpen, onClose, activeView, on
                                         >
                                             <Icon className={`w-6 h-6 ${isActive ? 'stroke-[2.5]' : 'stroke-[1.5]'}`} />
                                             <span className={`text-base ${isActive ? 'font-bold' : 'font-semibold'}`}>
-                                                {getLabel(viewKey)}
+                                                {item.tooltip}
                                             </span>
                                             {isActive && <ChevronRight className="w-5 h-5 ml-auto opacity-60" />}
                                         </button>

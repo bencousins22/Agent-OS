@@ -1,17 +1,15 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Activity, Settings, Play, RefreshCw, Zap, TrendingUp, Wallet, ChevronDown, AlertCircle, BarChart } from 'lucide-react';
 import { hyperliquid } from '../../services/hyperliquid';
 import { notify } from '../../services/notification';
-
-const COINS = ['BTC', 'ETH', 'SOL', 'ARB', 'TIA'];
 
 export const HyperliquidApp: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'trade' | 'backtest' | 'settings'>('trade');
     const [wallet, setWallet] = useState('');
     const [isConnected, setIsConnected] = useState(false);
-    const [selectedCoin, setSelectedCoin] = useState('BTC');
-    const [price, setPrice] = useState(64000);
+    const [selectedCoin] = useState('BTC');
+    const [price] = useState(64000);
     const [positions, setPositions] = useState<any[]>([]);
     
     // Trade State
@@ -22,10 +20,7 @@ export const HyperliquidApp: React.FC = () => {
     const [backtestResult, setBacktestResult] = useState<number[] | null>(null);
     const [isBacktesting, setIsBacktesting] = useState(false);
 
-    useEffect(() => {
-        // Mock Live Price Feed
-        // In real mode price should come from API; keep static until configured
-    }, []);
+
 
     const connectWallet = () => {
         if (!wallet) {
@@ -137,21 +132,8 @@ export const HyperliquidApp: React.FC = () => {
                                 <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(0deg, transparent 24%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 26%, transparent 27%, transparent 74%, rgba(255,255,255,0.1) 75%, rgba(255,255,255,0.1) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.1) 26%, transparent 27%, transparent 74%, rgba(255,255,255,0.1) 75%, rgba(255,255,255,0.1) 76%, transparent 77%, transparent)', backgroundSize: '50px 50px' }}></div>
                                 <Activity className="w-32 h-32 opacity-5 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
                                 
-                                {/* Mock Depth Chart / Candles */}
-                                <div className="w-full h-full flex items-end gap-1 z-10">
-                                    {Array.from({length: 60}).map((_, i) => {
-                                        const h = Math.max(10, Math.min(90, 50 + Math.sin(i * 0.2) * 30 + (Math.random() - 0.5) * 20));
-                                        const isGreen = i > 0 ? h > (50 + Math.sin((i-1) * 0.2) * 30) : true;
-                                        return (
-                                            <div 
-                                                key={i} 
-                                                style={{height: `${h}%`}} 
-                                                className={`flex-1 rounded-sm opacity-60 hover:opacity-100 transition-opacity ${isGreen ? 'bg-green-500' : 'bg-red-500'}`} 
-                                            />
-                                        );
-                                    })}
-                                </div>
-                                <span className="absolute bottom-4 right-4 text-xs opacity-50 bg-black/50 px-2 py-1 rounded z-20">Simulated Market Data</span>
+
+                                
                             </div>
                             
                             {/* Positions Panel */}

@@ -1,6 +1,5 @@
 import { fs } from './fileSystem';
 import { shell } from './shell';
-import { github } from './github';
 import { realGit } from './gitReal';
 import { notify } from './notification';
 import { bus } from './eventBus';
@@ -25,10 +24,8 @@ class ToolRegistry {
     async executeTool(
         toolName: string,
         args: Record<string, any>,
-        context: ToolExecutionContext = {}
+        _context: ToolExecutionContext = {}
     ): Promise<ToolResult> {
-        const { agentName = 'Agent', sessionId } = context;
-
         try {
             switch (toolName) {
                 case 'read_file':
@@ -231,7 +228,7 @@ class ToolRegistry {
     }
 
     // GitHub Operations
-    private async githubCreatePR(title: string, body: string, base: string, head: string): Promise<ToolResult> {
+    private async githubCreatePR(_title: string, _body: string, _base: string, _head: string): Promise<ToolResult> {
         try {
             // GitHub PR creation not yet implemented in github.ts
             return { success: false, output: '', error: 'GitHub PR creation not yet implemented' };

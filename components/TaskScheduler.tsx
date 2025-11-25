@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { scheduler } from '../services/scheduler';
 import { ScheduledTask } from '../types';
-import { Plus, Trash2, Play, Clock, Activity, Calendar, RefreshCw, Terminal } from 'lucide-react';
+import { Plus, Trash2, Clock, Activity, Calendar, RefreshCw, Terminal } from 'lucide-react';
 
 export const TaskScheduler: React.FC = () => {
     const [tasks, setTasks] = useState<ScheduledTask[]>([]);

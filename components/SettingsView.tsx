@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Settings, Github, Key, CheckCircle, Cloud, Box, Zap, Lock, Monitor, Image as ImageIcon, CreditCard, Info } from 'lucide-react';
+import { Settings, Github, CheckCircle, Cloud, Box, Zap, Lock, Monitor, Image as ImageIcon } from 'lucide-react';
 import { github } from '../services/github';
 import { deployment } from '../services/deployment';
 import { notify } from '../services/notification';

@@ -1,6 +1,5 @@
 
 import { bus } from './eventBus';
-import { BrowserAction } from '../types';
 import { config } from './config';
 
 /**

@@ -1,11 +1,10 @@
 
 import { fs } from './fileSystem';
 import { ShellResult } from '../types';
-import { apm } from './packageManager';
-import { github } from './github';
+
 import { realGit } from './gitReal';
-import { swarm } from './swarm';
 import { orchestrator } from './orchestrator';
+import { JulesOrchestrator } from './julesOrchestrator';
 
 // --- Polyfills for Node.js Environment in Browser ---
 
@@ -52,8 +51,8 @@ const OSPolyfill = {
     release: () => '5.4.0-aussie-os',
     arch: () => 'x64',
     cpus: () => Array(navigator.hardwareConcurrency || 4).fill({ model: 'Aussie Virtual CPU', speed: 3000, times: { user: 100, nice: 0, sys: 100, idle: 1000, irq: 0 } }),
-    totalmem: () => 8 * 1024 * 1024 * 1024, // Simulate 8GB RAM
-    freemem: () => 4 * 1024 * 1024 * 1024,
+    totalmem: () => (navigator as any).deviceMemory ? (navigator as any).deviceMemory * 1024 * 1024 * 1024 : 8 * 1024 * 1024 * 1024,
+    freemem: () => (navigator as any).deviceMemory ? (navigator as any).deviceMemory * 1024 * 1024 * 1024 / 2 : 4 * 1024 * 1024 * 1024,
     homedir: () => '/home/aussie',
     tmpdir: () => '/tmp',
     hostname: () => 'aussie-os',
@@ -109,7 +108,7 @@ class ShellService {
                 case 'echo': return this.echo(params);
                 case 'mkdir': return this.mkdir(params);
                 case 'rm': return this.rm(params);
-                case 'apm': return await this.apm(params);
+
                 case 'git': return await this.git(params);
                 case 'gemini-flow': return await this.geminiFlow(params);
                 case 'node': 
@@ -118,9 +117,9 @@ class ShellService {
                 case 'help':
                     return { stdout: `Aussie OS v2.2 Commands:
   File System:    ls, cd, pwd, cat, echo, mkdir, rm
-  Package Mgr:    apm install <pkg>
+
   Git Ops:        git <clone|status|init|add|commit|push>
-  Agent Control:  gemini-flow <jules|hive-mind|run-flow> [options]
+  Agent Control:  gemini-flow <run-flow> [options]
   Media Gen:      gemini-flow <veo3|imagen4|lyria> --prompt "..."
   Scripting:      node <file> | js <code>
 
@@ -224,17 +223,7 @@ Type 'gemini-flow' for detailed agent usage.`, stderr: '', exitCode: 0 };
         return { stdout: '', stderr: '', exitCode: 0 };
     }
 
-    private async apm(args: string[]): Promise<ShellResult> {
-        if (args[0] !== 'install' || !args[1]) {
-            return { stdout: '', stderr: 'usage: apm install <package>', exitCode: 1 };
-        }
-        try {
-            const msg = await apm.install(args[1]);
-            return { stdout: msg, stderr: '', exitCode: 0 };
-        } catch (e: any) {
-            return { stdout: '', stderr: e.message, exitCode: 1 };
-        }
-    }
+
 
     private async git(args: string[]): Promise<ShellResult> {
         const sub = args[0];
@@ -285,34 +274,8 @@ Type 'gemini-flow' for detailed agent usage.`, stderr: '', exitCode: 0 };
     private async geminiFlow(args: string[]): Promise<ShellResult> {
         const sub = args[0];
 
-        if (sub === 'jules') {
-            const task = args.slice(3).filter(a => !a.startsWith('--')).join(' ');
-            const quantum = args.includes('--quantum');
-            
-            try {
-                const result = await swarm.executeTask(task || "General Task", "feature", { enableQuantum: quantum });
-                return { 
-                    stdout: result.status === 'success' ? result.message + '\n' + result.details : '',
-                    stderr: result.status === 'failure' ? result.message : '', 
-                    exitCode: result.status === 'success' ? 0 : 1 
-                };
-            } catch (e: any) {
-                 return { stdout: '', stderr: e.message, exitCode: 1 };
-            }
-        }
-
-        if (sub === 'hive-mind' || sub === 'swarm') {
-            const objective = args.find((a, i) => args[i-1] === '--objective') || 'General objective';
-            const result = await swarm.executeTask(objective, "swarm-op", { topology: 'hierarchical' });
-             return { 
-                stdout: `[HiveMind] Swarm Spawned.\n${result.message}`,
-                stderr: '', 
-                exitCode: 0 
-            };
-        }
-
         if (sub === 'veo3' || sub === 'imagen4' || sub === 'lyria') {
-            const prompt = args.find((a, i) => args[i-1] === '--prompt') || 'Demo content';
+            const prompt = args.find((_, i) => args[i-1] === '--prompt') || 'Demo content';
             const result = await orchestrator.generateMedia(sub, prompt, '{}');
             return {
                 stdout: result.status === 'success' ? `Generated: ${result.file}` : '',
@@ -321,7 +284,7 @@ Type 'gemini-flow' for detailed agent usage.`, stderr: '', exitCode: 0 };
             };
         }
 
-        if (sub === 'run-flow') {
+                if (sub === 'run-flow') {
             const flowId = args[1];
             if (!flowId) {
                 return { stdout: '', stderr: 'Usage: gemini-flow run-flow <flow-id>', exitCode: 1 };
@@ -335,7 +298,6 @@ Type 'gemini-flow' for detailed agent usage.`, stderr: '', exitCode: 0 };
                 }
 
                 const flowData = JSON.parse(fs.readFile(flowPath));
-                const { JulesOrchestrator } = await import('./jules');
                 const jules = new JulesOrchestrator(flowData.nodes || [], flowData.edges || [], flowData.name || 'Flow');
 
                 const result = await jules.run();
@@ -348,7 +310,6 @@ Type 'gemini-flow' for detailed agent usage.`, stderr: '', exitCode: 0 };
                 return { stdout: '', stderr: `Flow execution error: ${e.message}`, exitCode: 1 };
             }
         }
-
         if (sub === 'init') {
              return { stdout: 'Initialized gemini-flow with protocols: A2A, MCP', stderr: '', exitCode: 0 };
         }
@@ -357,8 +318,6 @@ Type 'gemini-flow' for detailed agent usage.`, stderr: '', exitCode: 0 };
         return { stdout: `Gemini Flow Agent System
 
 USAGE:
-  gemini-flow jules [--quantum]                 Execute Jules autonomous agent
-  gemini-flow hive-mind --objective "task"       Spawn multi-agent swarm
   gemini-flow run-flow <flow-id>                 Execute saved flow by ID
   gemini-flow veo3 --prompt "video desc"         Generate video with Veo 3
   gemini-flow imagen4 --prompt "image desc"      Generate image with Imagen 4
@@ -366,8 +325,6 @@ USAGE:
   gemini-flow init                               Initialize agent protocols
 
 EXAMPLES:
-  gemini-flow jules --quantum
-  gemini-flow hive-mind --objective "analyze codebase"
   gemini-flow run-flow abc123def
   gemini-flow veo3 --prompt "cyberpunk city timelapse"`, stderr: '', exitCode: 0 };
     }
@@ -418,7 +375,7 @@ EXAMPLES:
                 return {
                     ...fs.gitFs.promises, // Default to promises
                     // Sync methods mapped to FS service
-                    readFileSync: (path: string, enc: any) => fs.readFile(path),
+                    readFileSync: (path: string, _enc: any) => fs.readFile(path),
                     writeFileSync: (path: string, data: string) => fs.writeFile(path, data),
                     existsSync: (path: string) => fs.exists(path),
                     mkdirSync: (path: string) => fs.mkdir(path),
@@ -466,20 +423,7 @@ EXAMPLES:
                  };
             }
 
-            // 3. External Packages (via APM/ESM)
-            const url = apm.getPackageUrl(pkgName);
-            if (url) {
-                return await import(/* @vite-ignore */ url);
-            }
-            
-            // Fallback: Try to install on the fly?
-            try {
-                await apm.install(pkgName);
-                const newUrl = apm.getPackageUrl(pkgName);
-                if (newUrl) return await import(/* @vite-ignore */ newUrl);
-            } catch(e) {}
-
-            throw new Error(`Package '${pkgName}' not found. Run 'apm install ${pkgName}' first.`);
+            throw new Error(`Package '${pkgName}' not found.`);
         };
 
         try {

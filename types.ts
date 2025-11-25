@@ -88,7 +88,7 @@ export interface FlowGraph {
     edges: FlowEdge[];
 }
 
-export type SystemEventType = 'file-change' | 'shell-output' | 'browser-navigate' | 'browser-action' | 'browser-page-loaded' | 'notification' | 'task-run' | 'task-complete' | 'agent-message' | 'switch-view' | 'open-window' | 'app-installed' | 'app-created' | 'bot-update' | 'agent-state-update' | 'agent-thought' | 'tool-execution' | 'kernel-permissions-changed' | 'agent-create-widget' | 'open-project';
+export type SystemEventType = 'file-change' | 'shell-output' | 'browser-navigate' | 'browser-action' | 'browser-page-loaded' | 'notification' | 'task-run' | 'task-complete' | 'agent-message' | 'switch-view' | 'open-window' | 'app-installed' | 'app-created' | 'bot-update' | 'agent-state-update' | 'agent-thought' | 'tool-execution' | 'kernel-permissions-changed' | 'agent-create-widget' | 'open-project' | 'mobile-split-toggle' | 'agent-daemon-log' | 'agent-daemon-state';
 
 export interface SystemEvent {
     type: SystemEventType;
@@ -145,7 +145,7 @@ export interface DeployState {
     url: string | null;
 }
 
-export type MainView = 'dashboard' | 'code' | 'flow' | 'browser' | 'scheduler' | 'github' | 'settings' | 'deploy' | 'projects' | 'marketplace';
+export type MainView = 'dashboard' | 'agentos' | 'code' | 'flow' | 'browser' | 'scheduler' | 'github' | 'settings' | 'deploy' | 'projects' | 'marketplace' | 'linux';
 
 export interface ThemeConfig {
     editorFontSize: number;
@@ -222,37 +222,5 @@ export interface AppDefinition {
     component: React.FC<any>;
     installed: boolean;
     price?: string;
-    botConfig?: BotAppConfig; 
-}
 
-export interface BotAppConfig {
-    sport: string;
-    title: string;
-    themeColor: string;
-    accentColor: string;
-    dataFeedUrl?: string;
-}
-
-// --- BOT MANAGER ---
-export interface Trade {
-    id: string;
-    timestamp: number;
-    type: 'buy' | 'sell';
-    amount: number;
-    asset: string;
-    pnl: number;
-    status: 'open' | 'won' | 'lost';
-}
-
-export interface BotInstance {
-    id: string;
-    name: string;
-    status: 'running' | 'paused' | 'stopped';
-    pnl: number;
-    roi: number;
-    wins: number;
-    losses: number;
-    activeTrades: number;
-    trades: Trade[];
-    config: BotAppConfig;
 }

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Plus, GripHorizontal } from 'lucide-react';
+import { X, GripHorizontal } from 'lucide-react';
 import { dashboardState } from '../services/dashboardState';
 
 interface Props {
@@ -15,7 +15,6 @@ const COLORS = ['bg-[#1c2128]', 'bg-yellow-500/20', 'bg-blue-500/20', 'bg-green-
 export const NoteWidget: React.FC<Props> = ({ id, initialContent = '', color = 'bg-[#1c2128]', onClose }) => {
     const [content, setContent] = useState(initialContent);
     const [bg, setBg] = useState(color);
-    const [isDragging, setIsDragging] = useState(false);
     const noteRef = useRef<HTMLDivElement>(null);
 
     const handleSave = () => {
@@ -30,8 +29,6 @@ export const NoteWidget: React.FC<Props> = ({ id, initialContent = '', color = '
 
     const handleDragStart = (e: React.MouseEvent) => {
         e.preventDefault();
-        setIsDragging(true);
-        
         const startX = e.clientX;
         const startY = e.clientY;
         const widget = dashboardState.getWidgets().find(w => w.id === id);
@@ -48,7 +45,6 @@ export const NoteWidget: React.FC<Props> = ({ id, initialContent = '', color = '
         };
 
         const onMouseUp = (mv: MouseEvent) => {
-            setIsDragging(false);
             const dx = mv.clientX - startX;
             const dy = mv.clientY - startY;
             dashboardState.updateWidget(id, { x: initialX + dx, y: initialY + dy });

@@ -9,5 +9,7 @@ module.exports = {
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: './tsconfig.jest.json' }],
   },
+  // Run a single worker to avoid sporadic crashes in the Jest worker farm on Node 24.
+  maxWorkers: 1,
   clearMocks: true,
 };

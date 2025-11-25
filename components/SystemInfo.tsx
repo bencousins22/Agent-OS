@@ -50,7 +50,7 @@ export const SystemInfo: React.FC = () => {
                             {pulse.online ? 'Live' : 'Offline'}
                         </span>
                     </h1>
-                    <p className="text-gray-400 text-sm">Version 2.2.1 • JulesVM</p>
+                    <p className="text-gray-400 text-sm">Version 2.2.1</p>
                 </div>
                 <div className="hidden md:flex items-center gap-2 text-xs text-gray-400 bg-white/5 px-3 py-2 rounded-lg border border-os-border">
                     <Monitor className="w-4 h-4" />
@@ -76,7 +76,7 @@ export const SystemInfo: React.FC = () => {
                     <Cpu className="w-8 h-8 text-aussie-500" />
                     <div>
                         <div className="text-xs uppercase text-gray-500 font-bold mb-1">Kernel</div>
-                        <div className="text-sm font-mono">JulesVM v3.0</div>
+                        <div className="text-sm font-mono">Aussie OS v3.0</div>
                         <div className="text-[11px] text-gray-500">Realtime agent shell</div>
                     </div>
                 </div>
