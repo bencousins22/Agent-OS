@@ -7,6 +7,7 @@ import { fs } from './fileSystem';
 import { shell } from './shell';
 import { audioUtils } from './audio';
 import { GoogleGenAI, Modality } from '@google/genai';
+import { getJulesApiKey } from './julesKeys';
 
 const uuid = () => Math.random().toString(36).substring(2, 15);
 
@@ -83,9 +84,10 @@ export const useAgent = () => {
     };
 
     const speakText = async (text: string) => {
-        if (!process.env.API_KEY || !text || !isTtsEnabled) return;
+        const apiKey = getJulesApiKey();
+        if (!apiKey || !text || !isTtsEnabled) return;
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey });
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash-preview-tts',
                 contents: [{ parts: [{ text }] }],

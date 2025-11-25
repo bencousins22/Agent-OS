@@ -2,6 +2,7 @@
 import { bus } from './eventBus';
 import { fs } from './fileSystem';
 import { GoogleGenAI } from '@google/genai';
+import { getJulesApiKey } from './julesKeys';
 
 /**
  * Google AI Orchestrator
@@ -20,7 +21,7 @@ export class GoogleAIOrchestrator {
         let content = '';
 
         // Ensure API Key is available
-        const apiKey = process.env.API_KEY;
+        const apiKey = getJulesApiKey();
         if (!apiKey) {
             return { status: "error", error: "API Key missing" };
         }
@@ -39,7 +40,7 @@ export class GoogleAIOrchestrator {
                     }
                     
                     // Re-instantiate with potentially updated key context if needed (though process.env usually handles it)
-                    const aiVeo = new GoogleGenAI({ apiKey: process.env.API_KEY });
+                    const aiVeo = new GoogleGenAI({ apiKey });
 
                     bus.emit('shell-output', `[Veo] 🎥 Initializing generation (Veo 3.1 Fast)...`);
                     
@@ -63,7 +64,7 @@ export class GoogleAIOrchestrator {
                     if (operation.response?.generatedVideos?.[0]?.video?.uri) {
                         const videoUri = operation.response.generatedVideos[0].video.uri;
                         // Fetch the video bytes
-                        const downloadUrl = `${videoUri}&key=${process.env.API_KEY}`;
+                        const downloadUrl = `${videoUri}&key=${apiKey}`;
                         const vidRes = await fetch(downloadUrl);
                         const blob = await vidRes.blob();
                         

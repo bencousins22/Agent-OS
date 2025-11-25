@@ -1,5 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { AUSSIE_SYSTEM_INSTRUCTION, TOOLS } from '../constants';
+import { getJulesApiKey } from './julesKeys';
 
 export class JulesOrchestrator {
     private graph: any;
@@ -13,11 +14,11 @@ export class JulesOrchestrator {
     }
     
     public async run() {
-        if (!process.env.API_KEY) {
+        if (!getJulesApiKey()) {
             this.logCallback("Error: No API Key");
             return;
         }
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const ai = new GoogleGenAI({ apiKey: getJulesApiKey() });
         const chat = ai.chats.create({
             model: 'gemini-2.5-pro',
             config: { systemInstruction: AUSSIE_SYSTEM_INSTRUCTION, tools: [{ functionDeclarations: TOOLS }] }

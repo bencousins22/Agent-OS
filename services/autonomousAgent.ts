@@ -10,6 +10,7 @@ import { fs } from './fileSystem';
 import { shell } from './shell';
 import { bus } from './eventBus';
 import { logger } from './logger';
+import { getJulesApiKey } from './julesKeys';
 
 interface AgentTask {
     id: string;
@@ -96,11 +97,12 @@ class AutonomousAgent {
             const fileTree = this.getFileSystemContext();
 
             // Call Gemini to decide next action
-            if (!process.env.API_KEY) {
+            const apiKey = getJulesApiKey();
+            if (!apiKey) {
                 throw new Error('No API key configured');
             }
 
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey });
             const chat = ai.chats.create({
                 model: 'gemini-2.5-pro',
                 config: {

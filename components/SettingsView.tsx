@@ -6,6 +6,7 @@ import { deployment } from '../services/deployment';
 import { notify } from '../services/notification';
 import { DeploymentProvider } from '../types';
 import { dashboardState, WALLPAPERS, Wallpaper } from '../services/dashboardState';
+import { getJulesApiKey, getJulesApiUrl, storeJulesApiKey, storeJulesApiUrl } from '../services/julesKeys';
 
 export const SettingsView: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'general' | 'appearance'>('general');
@@ -14,6 +15,7 @@ export const SettingsView: React.FC = () => {
     const [isLoadingGh, setIsLoadingGh] = useState(false);
     const [keys, setKeys] = useState({ render: '', vercel: '', replit: '', netlify: '' });
     const [julesKey, setJulesKey] = useState('');
+    const [julesUrl, setJulesUrl] = useState('');
     const [currentWallpaper, setCurrentWallpaper] = useState<Wallpaper>(dashboardState.getWallpaper());
 
     useEffect(() => {
@@ -27,11 +29,14 @@ export const SettingsView: React.FC = () => {
             replit: deployment.getApiKey('replit') || '',
             netlify: deployment.getApiKey('netlify') || ''
         });
-        setJulesKey(localStorage.getItem('jules_trading_key') || '');
+        setJulesKey(getJulesApiKey());
+        setJulesUrl(getJulesApiUrl());
         
         const unsub = dashboardState.subscribe(state => setCurrentWallpaper(state.wallpaper));
         return () => unsub();
     }, []);
+
+    const kernelKey = getJulesApiKey();
 
     const handleGitHubSave = async () => {
         if (!pat) return;
@@ -55,8 +60,9 @@ export const SettingsView: React.FC = () => {
     };
 
     const handleJulesKeySave = () => {
-        localStorage.setItem('jules_trading_key', julesKey);
-        notify.success('Jules Key Saved', 'Trading API Key securely stored.');
+        storeJulesApiKey(julesKey);
+        storeJulesApiUrl(julesUrl);
+        notify.success('Jules Key Saved', 'Trading API credentials securely stored in this browser.');
     };
 
     const handleWallpaperChange = (wp: Wallpaper) => {
@@ -97,18 +103,20 @@ export const SettingsView: React.FC = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
                                     <div className="bg-[#0a0c10] rounded-lg border border-os-border p-4 flex flex-col justify-between gap-2">
                                         <div><div className="text-xs font-bold text-os-textDim uppercase">Kernel API Key</div><div className="text-sm text-green-400 flex items-center gap-2 mt-1"><div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"/>Active (Environment)</div></div>
-                                        <div className="font-mono text-xs text-gray-500 bg-white/5 px-3 py-2 rounded border border-white/5 truncate max-w-full">{process.env.API_KEY ? `••••••••${process.env.API_KEY.slice(-4)}` : 'N/A'}</div>
+                                        <div className="font-mono text-xs text-gray-500 bg-white/5 px-3 py-2 rounded border border-white/5 truncate max-w-full">{kernelKey ? `••••••••${kernelKey.slice(-4)}` : 'N/A'}</div>
                                     </div>
 
                                     <div className="bg-[#0a0c10] rounded-lg border border-os-border p-4 flex flex-col justify-between gap-2">
-                                        <div>
-                                            <div className="text-xs font-bold text-os-textDim uppercase">Jules Trading API Key</div>
-                                            <p className="text-[10px] text-gray-500">Required for Bot Execution</p>
-                                        </div>
+                                    <div className="space-y-2">
+                                        <div className="text-xs font-bold text-os-textDim uppercase">Jules Trading API Key</div>
+                                        <p className="text-[10px] text-gray-500">Required for Jules kernel operations.</p>
                                         <div className="flex gap-2">
                                             <input type="password" value={julesKey} onChange={e => setJulesKey(e.target.value)} className="flex-1 bg-transparent border-b border-gray-700 py-1 text-xs font-mono text-white outline-none focus:border-aussie-500" placeholder="Enter Key..." />
                                             <button onClick={handleJulesKeySave} className="text-xs font-bold text-aussie-500 hover:text-white">SAVE</button>
                                         </div>
+                                        <div className="text-xs font-bold text-os-textDim uppercase">Jules API Endpoint</div>
+                                        <input value={julesUrl} onChange={e => setJulesUrl(e.target.value)} className="w-full bg-transparent border border-white/5 rounded px-3 py-2 text-xs font-mono text-white outline-none focus:border-aussie-500" placeholder="https://api.jules.dev/v1" />
+                                    </div>
                                     </div>
                                 </div>
                             </div>

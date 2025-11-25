@@ -26,8 +26,9 @@ export default defineConfig(({ mode }) => {
       ],
       define: {
         // Inject environment variables at build time
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY ?? ''),
+        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY ?? ''),
+        'process.env.JULES_API_KEY': JSON.stringify(env.JULES_API_KEY ?? ''),
         'process.env.RENDER_API_KEY': JSON.stringify(env.RENDER_API_KEY),
         'process.env.VERCEL_API_KEY': JSON.stringify(env.VERCEL_API_KEY),
         'process.env.NETLIFY_API_KEY': JSON.stringify(env.NETLIFY_API_KEY),

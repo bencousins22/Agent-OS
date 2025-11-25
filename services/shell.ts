@@ -2,6 +2,8 @@
 import { fs } from './fileSystem';
 import { ShellResult } from '../types';
 
+import { getJulesApiKey } from './julesKeys';
+
 import { realGit } from './gitReal';
 import { orchestrator } from './orchestrator';
 import { JulesOrchestrator } from './julesOrchestrator';
@@ -356,7 +358,7 @@ EXAMPLES:
 
         // Process Polyfill
         const mockProcess = {
-            env: { ...this.env, API_KEY: process.env.API_KEY || '' },
+            env: { ...this.env, API_KEY: getJulesApiKey() },
             cwd: () => this.cwd,
             argv: ['node', ...args],
             exit: (code: number) => { throw new Error(`Process exited with code ${code}`); },

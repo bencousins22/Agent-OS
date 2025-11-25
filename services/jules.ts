@@ -11,6 +11,7 @@ import { scheduler } from './scheduler';
 import { deployment } from './deployment';
 
 import { browserAutomation } from './browserAutomation';
+import { getJulesApiKey } from './julesKeys';
 
 const uuid = () => Math.random().toString(36).substring(2, 15);
 
@@ -40,8 +41,9 @@ class JulesAgent {
     }
 
     public initAI() {
-        if (process.env.API_KEY) {
-            this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const apiKey = getJulesApiKey();
+        if (apiKey) {
+            this.ai = new GoogleGenAI({ apiKey });
         }
     }
 
@@ -76,7 +78,7 @@ class JulesAgent {
      * Core Input Handler
      */
     public async processInput(text: string) {
-        if (!process.env.API_KEY) {
+        if (!getJulesApiKey()) {
              this.addMessage('system', 'Error: API_KEY not found. Please check your environment variables.');
              return;
         }
@@ -95,6 +97,7 @@ class JulesAgent {
                 if (!this.ai) this.initAI();
                 
                 if (this.ai) {
+                    const apiKey = getJulesApiKey();
                     this.chatSession = this.ai.chats.create({
                         model: 'gemini-2.5-pro',
                         config: { 

@@ -7,6 +7,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { logger } from './logger';
 import { bus } from './eventBus';
+import { getJulesApiKey } from './julesKeys';
 
 export type AgentRole = 'planner' | 'coder' | 'reviewer' | 'tester' | 'optimizer';
 
@@ -147,10 +148,11 @@ class SwarmOrchestrator {
             try {
                 agent.status = 'thinking';
 
-                if (!process.env.API_KEY) {
+                const apiKey = getJulesApiKey();
+                if (!apiKey) {
                     throw new Error('No API key');
                 }
-                const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+                const ai = new GoogleGenAI({ apiKey });
                 const chat = ai.chats.create({
                     model: agent.model,
                     config: {
@@ -215,8 +217,9 @@ Respond in JSON format:
                     try {
                         voter.status = 'voting';
 
-                        if (!process.env.API_KEY) return 'abstain';
-                        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+                        const apiKey = getJulesApiKey();
+                        if (!apiKey) return 'abstain';
+                        const ai = new GoogleGenAI({ apiKey });
                         const chat = ai.chats.create({
                             model: voter.model,
                             config: {
